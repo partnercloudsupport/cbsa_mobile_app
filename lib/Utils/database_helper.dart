@@ -165,7 +165,7 @@ class DatabaseHelper {
   initDb() async {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'cbsa.db');
-      await deleteDatabase(path); 
+      // await deleteDatabase(path); 
     var db = await openDatabase(path, version: 1, onCreate: _onCreate);
     return db;
   }

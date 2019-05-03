@@ -33,6 +33,35 @@ class ViewLeadState extends State<ViewLead> {
     super.initState();
   }
 
+    Widget _displayText(String title, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(left: 25.0),
+          child: Text(
+            title,
+            style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.start,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 25.0),
+          child: TextFormField(
+            textAlign: TextAlign.start,
+            enabled: false,
+            initialValue: value,
+          ),
+        ),
+        SizedBox(
+          height: 10.0,
+        ),
+        Divider(),
+      ],
+    );
+  }
+
+
   Future<Territory> getTerritory(int id) async {
     var db = DatabaseHelper();
     Territory territory = await db.getTerritory(id);
@@ -197,32 +226,32 @@ class ViewLeadState extends State<ViewLead> {
     );
   }
 
-  Widget _displayText(String title, String value) {
-    String val = value == '' ? 'NULL' : value;
+  // Widget _displayText(String title, String value) {
+  //   String val = value == '' ? 'NULL' : value;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(left: 15.0),
-          child: Text(
-            title,
-            style: TextStyle(fontSize: 17.0),
-            textAlign: TextAlign.start,
-          ),
-        ),
-        TextFormField(
-          textAlign: TextAlign.center,
-          enabled: false,
-          initialValue: value,
-        ),
-        SizedBox(
-          height: 10.0,
-        ),
-        Divider(),
-      ],
-    );
-  }
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: <Widget>[
+  //       Padding(
+  //         padding: EdgeInsets.only(left: 15.0),
+  //         child: Text(
+  //           title,
+  //           style: TextStyle(fontSize: 17.0),
+  //           textAlign: TextAlign.start,
+  //         ),
+  //       ),
+  //       TextFormField(
+  //         textAlign: TextAlign.center,
+  //         enabled: false,
+  //         initialValue: value,
+  //       ),
+  //       SizedBox(
+  //         height: 10.0,
+  //       ),
+  //       Divider(),
+  //     ],
+  //   );
+  // }
 
   Widget _displayNumber(String title, int value) {
     return Column(
@@ -460,9 +489,12 @@ class ViewLeadState extends State<ViewLead> {
                 color: Colors.white,
                 child: ListView(
                   children: <Widget>[
-                    _getTerritory(widget.lead.territory),
-                    _getSubTerritory(widget.lead.subTerritory),
-                    _getBlock(widget.lead.block),
+                    // _getTerritory(widget.lead.territory),
+                    // _getSubTerritory(widget.lead.subTerritory),
+                    // _getBlock(widget.lead.block),
+                    _displayText('Territory', _getTerritory(widget.lead.territory).toString()),
+                    _displayText('Sub Territory', _getSubTerritory(widget.lead.subTerritory).toString()),
+                    _displayText('Block', _getBlock(widget.lead.block).toString()),
                     _displayText('Address', widget.lead.address),
                     _displayText('Gender', widget.lead.gender),
                     _displayText('Primary Telephone', widget.lead.primaryTelephone),

@@ -42,14 +42,14 @@ class LoginModel{
   LoginModel.fromJson(Map<String,dynamic> json):
     email=json['email'],
     password=json['password'],
-    device_token=json['device_token'];
+    device_token=json['token'];
 
 
   Map<String, dynamic> toMap() {
     var map = new Map<String, dynamic>();
     map['email'] =  email;
     map['password'] =  password;
-    map['device_token'] = device_token;
+    map['token'] = device_token;
     return map;
   }
 }

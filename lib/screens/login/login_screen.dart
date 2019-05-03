@@ -140,11 +140,15 @@ class _LoginState extends State<Login> {
           _formKey.currentState.save();
           try{
             var user = login.LoginModel(email: this._email, password: this._password,device_token: prefs.getString('firebase_token'));
+            print('Request' + user.toMap().toString());
             Response response = await UserService.login(user);
             var decodedJson = jsonDecode(response.body);
             var status = decodedJson['status'];
+            
+            print(decodedJson);
 
             if(status == 200) {
+              
               UserObject userObject = UserObject.map(decodedJson['user']);
               prefs.setInt('id', userObject.userId);
               int userResult = await model.saveUserObject(userObject);
@@ -196,7 +200,7 @@ class _LoginState extends State<Login> {
                   isloading = false;
                 });
                 prefs.setBool('isloggedin', true);
-                Navigator.pushNamed(context, '/home');
+                Navigator.pushReplacementNamed(context, '/home');
               }
             } else {
               setState(() {

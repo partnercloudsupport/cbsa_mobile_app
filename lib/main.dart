@@ -95,16 +95,15 @@ class _AppState extends State<App> {
   }
 
   Future onSelectNotification(String payload) async {
-    print(payload);
-    // showDialog(
-    //   context: context,
-    //   builder: (_) {
-    //     return new AlertDialog(
-    //       title: Text("PayLoad"),
-    //       content: Text("Payload : $payload"),
-    //     );
-    //   },
-    // );
+    showDialog(
+      context: context,
+      builder: (_) {
+        return new AlertDialog(
+          title: Text("PayLoad"),
+          content: Text("Payload : $payload"),
+        );
+      },
+    );
   }
 
   @override
