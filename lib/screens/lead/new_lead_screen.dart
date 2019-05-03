@@ -336,13 +336,13 @@ class _NewLeadState extends State<NewLead> {
     } catch (e) {
       currentLocation = null;
     }
-    print({'currentLocation': currentLocation});
     if(currentLocation != null) {
       setState(() {
         _latitude = currentLocation.latitude;
         _longitude = currentLocation.longitude;
       });
     }
+    print({'latitude': _latitude, 'longitude': _longitude});
   }
 
   // Personal Details Widgets
@@ -1494,7 +1494,6 @@ class _NewLeadState extends State<NewLead> {
         _firstName,
         _lastName,
         _otherNames,
-        '', // uuid
         _territory.territoryId,
         _subTerritory.subTerritoryId,
         _block.blockId,
@@ -1528,14 +1527,7 @@ class _NewLeadState extends State<NewLead> {
         _typeSelected.join(','),
         _securitySelected.join(','),
         _privacySelected.join(','),
-        '',
-        1,
-        _address,
-        1,
-        null,
-        null,
-        _endTime,
-        null,
+        _address
       );
 
       Response response = await LeadService.saveLead(lead);

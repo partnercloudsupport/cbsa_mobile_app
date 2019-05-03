@@ -69,9 +69,9 @@ class _UpdateLeadState extends State<UpdateLead> {
   List<LeadType> _leadTypeList = [];
   Map<String, bool> _infoSourceList = {};
   List<int> _infoSourceSelected = [];
-  String _referred = 'No';
-  String _referredBy;
-  TextEditingController _referredByController = TextEditingController();
+  // String _referred = 'No';
+  // String _referredBy;
+  // TextEditingController _referredByController = TextEditingController();
 
   // Toilet Information
   ToiletType _toiletType;
@@ -99,17 +99,14 @@ class _UpdateLeadState extends State<UpdateLead> {
   TextEditingController _secondaryNumbercontroller = TextEditingController();
 
   // Additional Information
-  Map<String, bool> _enrollmentReason = {
-    'Personal': false,
-    'Commercial': false
-  };
+  Map<String, bool> _enrollmentReason = {};
   List<int> _reasonsSelected = [];
-  Map<String, bool> _householdSavings = {
-    'Bank': false,
-    'Savings Club': false,
-    'Mobile Money Account': false
-  };
-  List<String> _savingsSelected = [];
+  // Map<String, bool> _householdSavings = {
+  //   'Bank': false,
+  //   'Savings Club': false,
+  //   'Mobile Money Account': false
+  // };
+  // List<String> _savingsSelected = [];
   
   ServiceProvider _serviceProvider;
   List<ServiceProvider> _serviceProviders = [];
@@ -119,27 +116,13 @@ class _UpdateLeadState extends State<UpdateLead> {
   String _salariedWorker = 'Yes';
   String _paymentDate;
   TextEditingController _paymentDateController = TextEditingController();
-  Map<String, bool> _paidServices = {
-    'City Water': false,
-    'Trucked Water': false,
-    'Electricity': false
-  };
+  Map<String, bool> _paidServices = {};
   List<int> _servicesSelected = [];
-  Map<String, bool> _privacyList = {
-    'Public': false,
-    'Private': false,
-    'Neighbour': false,
-    'None': false
-  };
+  Map<String, bool> _privacyList = {};
   List<int> _privacySelected = [];
-  Map<String, bool> _typeList = {
-    'Latrine': false,
-    'Squat': false,
-    'Flush': false,
-    'Dry': false
-  };
+  Map<String, bool> _typeList = {};
   List<int> _typeSelected = [];
-  Map<String, bool> _securityList = {'Safe': false, 'Not Safe': false};
+  Map<String, bool> _securityList = {};
   List<int> _securitySelected = [];
 
   // Status
@@ -178,23 +161,31 @@ class _UpdateLeadState extends State<UpdateLead> {
     fetchAllToiletTypesCA();
     fetchAllToiletSecurity();
 
-    _firstNameController.text = widget.lead.firstName;
-    _lastNameController.text = widget.lead.lastName;
-    _otherNamesController.text = widget.lead.otherNames;
-    _numberOfToiletsController.text = widget.lead.noOfToilets.toString();
-    _numberOfMaleAdultsController.text = widget.lead.noOfMaleAdults.toString();
-    _numberOfFemaleAdultsController.text = widget.lead.noOfFemaleAdults.toString();
-    _numberOfMaleChildrenController.text = widget.lead.noOfMaleChildren.toString();
-    _numberOfFemaleChildrenController.text = widget.lead.noOfFemaleChildren.toString();
-    _addressController.text = widget.lead.address;
-    _primaryNumberController.text = widget.lead.primaryTelephone;
-    _secondaryNumbercontroller.text = widget.lead.secondaryTelephone;
-    _paymentDateController.text = widget.lead.paymentDate;
-    _commentController.text = widget.lead.comments;
-
     setState(() {
-      _startTime = DateTime.now().toString();
-      this._gender = widget.lead.gender;
+      _firstNameController.text = widget.lead.firstName;
+      _lastNameController.text = widget.lead.lastName;
+      _otherNamesController.text = widget.lead.otherNames;
+      _numberOfToiletsController.text = widget.lead.noOfToilets.toString();
+      _numberOfMaleAdultsController.text = widget.lead.noOfMaleAdults.toString();
+      _numberOfFemaleAdultsController.text = widget.lead.noOfFemaleAdults.toString();
+      _numberOfMaleChildrenController.text = widget.lead.noOfMaleChildren.toString();
+      _numberOfFemaleChildrenController.text = widget.lead.noOfFemaleChildren.toString();
+      _addressController.text = widget.lead.address;
+      _gender = widget.lead.gender;
+      _primaryNumberController.text = widget.lead.primaryTelephone;
+      _secondaryNumbercontroller.text = widget.lead.secondaryTelephone;
+      _paymentDateController.text = widget.lead.paymentDate;
+      _followUpDateController.text = widget.lead.followUpDate;
+      _siteInspectionDateController.text = widget.lead.siteInspectionDate;
+      _toiletInstallationDateController.text = widget.lead.installationDate;
+      _commentController.text = widget.lead.comments;
+
+      _infoSourceSelected = widget.lead.infoSourceSelected.split(',').toList().map((item) => int.parse(item)).toList();
+      _reasonsSelected = widget.lead.reasonsSelected.split(',').toList().map((item) => int.parse(item)).toList();
+      _servicesSelected = widget.lead.servicesSelected.split(',').toList().map((item) => int.parse(item)).toList();
+      _typeSelected = widget.lead.typeSelected.split(',').toList().map((item) => int.parse(item)).toList();
+      _securitySelected = widget.lead.securitySelected.split(',').toList().map((item) => int.parse(item)).toList();
+      _privacySelected = widget.lead.privacySelected.split(',').toList().map((item) => int.parse(item)).toList();
     });
   }
 
@@ -791,59 +782,59 @@ class _UpdateLeadState extends State<UpdateLead> {
     );
   }
 
-  Widget referredBy() {
-    var referredList = ['Yes', 'No'];
-    return Column(
-      children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(right: 20), 
-              child: Text('Referred?')
-            ),
-            DropdownButton<String>(
-              value: _referred,
-              items: referredList.map((val) {
-                return DropdownMenuItem<String>(
-                  value: val,
-                  child: Text(val),
-                );
-              }).toList(),
-              onChanged: (String val) {
-                setState(() {
-                  _referred = val;
-                });
-              },
-            )
-          ],
-        ),
-        Container(
-          child: _referred == 'Yes'
-              ? TextFormField(
-                  decoration: InputDecoration(
-                      labelText: 'Name of Referee',
-                      hasFloatingPlaceholder: true),
-                  controller: _referredByController,
-                  onFieldSubmitted: (value) {
-                    _referredByController.text = value;
-                  },
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Name of Referee is Required';
-                    }
-                  },
-                  onSaved: (value) {
-                    setState(() {
-                      this._referredBy = value;
-                    });
-                  },
-                )
-              : null,
-        )
-      ],
-    );
-  }
+  // Widget referredBy() {
+  //   var referredList = ['Yes', 'No'];
+  //   return Column(
+  //     children: <Widget>[
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //         children: <Widget>[
+  //           Padding(
+  //             padding: EdgeInsets.only(right: 20), 
+  //             child: Text('Referred?')
+  //           ),
+  //           DropdownButton<String>(
+  //             value: _referred,
+  //             items: referredList.map((val) {
+  //               return DropdownMenuItem<String>(
+  //                 value: val,
+  //                 child: Text(val),
+  //               );
+  //             }).toList(),
+  //             onChanged: (String val) {
+  //               setState(() {
+  //                 _referred = val;
+  //               });
+  //             },
+  //           )
+  //         ],
+  //       ),
+  //       Container(
+  //         child: _referred == 'Yes'
+  //             ? TextFormField(
+  //                 decoration: InputDecoration(
+  //                     labelText: 'Name of Referee',
+  //                     hasFloatingPlaceholder: true),
+  //                 controller: _referredByController,
+  //                 onFieldSubmitted: (value) {
+  //                   _referredByController.text = value;
+  //                 },
+  //                 validator: (value) {
+  //                   if (value.isEmpty) {
+  //                     return 'Name of Referee is Required';
+  //                   }
+  //                 },
+  //                 onSaved: (value) {
+  //                   setState(() {
+  //                     this._referredBy = value;
+  //                   });
+  //                 },
+  //               )
+  //             : null,
+  //       )
+  //     ],
+  //   );
+  // }
 
   // Toilet Information Widgets
   Widget _getToiletType() {
@@ -1540,54 +1531,87 @@ class _UpdateLeadState extends State<UpdateLead> {
         msg: 'Updating Lead...',
         toastLength: Toast.LENGTH_LONG
       );
-      print(this._sIDate);
-      Lead lead = new Lead(
-        _firstName,
-        _lastName,
-        _otherNames,
-        '', // uuid
-        _territory.territoryId,
-        _subTerritory.subTerritoryId,
-        _block.blockId,
-        _gender,
-        _primaryPhoneNumber,
-        _secondaryPhoneNumber,
-        _referredBy,
-        _toiletType.toiletTypeId,
-        _numberOfToilets,
-        _numberOfMaleAdults,
-        _numberOfFemaleAdults,
-        _numberOfMaleChildren,
-        _numberOfFemaleChildren,
-        _latitude,
-        _longitude,
-        _infoSourceSelected.join(','),
-        _leadType.leadTypeId,
-        _disability,
-        _reasonsSelected.join(','),
-        _status,
-        _fUDate,
-        _sIDate,
-        _tIDate,
-        _comment,
-        _user['user_id'],
-        _serviceProvider.serviceProviderId, // _serviceProvider,
-        _telephoneType.telephoneTypeId,
-        _salariedWorker,
-        _paymentDate,
-        _servicesSelected.join(','),
-        '',// _typeSelected,
-        _securitySelected.join(','),
-        _privacySelected.join(','),
-        '',
-        1,
-        _address,
-        1,
-        null,
-        null,
-        _endTime,
-        null,
-      );
+
+      Map<String, dynamic> lead = {
+        'fname': _firstName,
+        'lname': _lastName,
+        'onames': _otherNames,
+        'terrisectownid': _territory.territoryId,
+        'subterrizonecomid': _subTerritory.subTerritoryId,
+        'block': _block.blockId,
+        'address': _address,
+        'gender': _gender,
+        'pritelephone': _primaryPhoneNumber,
+        'sectelephone': _secondaryPhoneNumber,
+        'toilettypeid': _toiletType.toiletTypeId,
+        'numoftoilets': _numberOfToilets,
+        'numofmaleadults': _numberOfMaleAdults,
+        'numoffemaleadults': _numberOfFemaleAdults,
+        'numofmalechild': _numberOfMaleChildren,
+        'numofemalechild': _numberOfFemaleChildren,
+        'soofinfo': _infoSourceSelected.join(','),
+        'leadtype': _leadType.leadTypeId,
+        'disability': _disability,
+        'resofenroll': _reasonsSelected.join(','),
+        'status': _status,
+        'inspectiondate': _sIDate,
+        'installdate': _tIDate,
+        'comments': _comment,
+        'teleserpro': _serviceProvider.serviceProviderId,
+        'teletype': _telephoneType.telephoneTypeId,
+        'issalworker': _salariedWorker,
+        'dateofpay': _paymentDate,
+        'opaidservices': _servicesSelected.join(','),
+        'toilettype': _typeSelected.join(','),
+        'toiletsecu': _securitySelected.join(','),
+        'toiletprivacy': _privacySelected.join(',')
+      };
+
+      print(lead);
+
+      // Lead lead = Lead.map(map);
+      // print(lead.toApiMap());
+      
+      // Lead lead = new Lead(
+      //   _firstName,
+      //   _lastName,
+      //   _otherNames,
+      //   _territory.territoryId,
+      //   _subTerritory.subTerritoryId,
+      //   _block.blockId,
+      //   _gender,
+      //   _primaryPhoneNumber,
+      //   _secondaryPhoneNumber,
+      //   _referredBy,
+      //   _toiletType.toiletTypeId,
+      //   _numberOfToilets,
+      //   _numberOfMaleAdults,
+      //   _numberOfFemaleAdults,
+      //   _numberOfMaleChildren,
+      //   _numberOfFemaleChildren,
+      //   _latitude,
+      //   _longitude,
+      //   _infoSourceSelected.join(','),
+      //   _leadType.leadTypeId,
+      //   _disability,
+      //   _reasonsSelected.join(','),
+      //   _status,
+      //   _fUDate,
+      //   _sIDate,
+      //   _tIDate,
+      //   _comment,
+      //   _user['user_id'],
+      //   _serviceProvider.serviceProviderId,
+      //   _telephoneType.telephoneTypeId,
+      //   _salariedWorker,
+      //   _paymentDate,
+      //   _servicesSelected.join(','),
+      //   _typeSelected.join(','),
+      //   _securitySelected.join(','),
+      //   _privacySelected.join(','),
+      //   _address
+      // );
+      // print(lead.toApiMap());
 
       Response response = await UpdateLeadService.updateLead(lead, widget.lead.id);
       var decodedJson = jsonDecode(response.body);
