@@ -130,6 +130,8 @@ class _WorkOrdersState extends State<WorkOrders> {
     });
 
     var response = await WorkOrderService.fetchWorkOrders();
+    print(response.statusCode);
+    print(response.body);
     var decodedResponse = jsonDecode(response.body);
     
     if(response.statusCode == 200) {
