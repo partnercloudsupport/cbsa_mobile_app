@@ -25,6 +25,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(App());
@@ -95,20 +96,32 @@ class _AppState extends State<App> {
   }
 
   Future onSelectNotification(String payload) async {
-    showDialog(
-      context: context,
-      builder: (_) {
-        return new AlertDialog(
-          title: Text("PayLoad"),
-          content: Text("Payload : $payload"),
-        );
-      },
-    );
+    switch (payload) {
+      case 'customer':
+        break;
+      case 'inspecshedule':
+        break;
+      case 'customer':
+        break;
+      case 'customer':
+        break;
+      case 'customer':
+        break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en'), // English
+        const Locale('he'), // Hebrew
+        const Locale('zh'), // Chinese
+      ],
       theme: ThemeData(
         primaryColor: Colors.cyan.shade300,
         primarySwatch: Colors.cyan,

@@ -165,7 +165,7 @@ class DatabaseHelper {
   initDb() async {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'cbsa.db');
-      // await deleteDatabase(path); 
+      await deleteDatabase(path); 
     var db = await openDatabase(path, version: 1, onCreate: _onCreate);
     return db;
   }
@@ -173,7 +173,7 @@ class DatabaseHelper {
   void _onCreate(Database db, int newVersion) async {
     // LEADS TABLE
     await db.execute(
-      'CREATE TABLE leads(id INTEGER PRIMARY KEY, fname TEXT, lname TEXT, onames TEXT, uuid TEXT, ' +
+      'CREATE TABLE leads(id INTEGER PRIMARY KEY, serverId INTEGER, fname TEXT, lname TEXT, onames TEXT, uuid TEXT, ' +
       'terrisectownid INTEGER, subterrizonecomid INTEGER, block INTEGER, gender TEXT, pritelephone TEXT, sectelephone TEXT, ' +
       'referredby TEXT, toilettypeid INTEGER, numoftoilets INTEGER, numofmaleadults INTEGER, numoffemaleadults INTEGER, ' + 
       'numofmalechild INTEGER, numofemalechild INTEGER, lat DOUBLE, lng DOUBLE, soofinfo TEXT, ' +
@@ -991,8 +991,9 @@ await db.execute(
   }
 
   Future<List> getAllReadyLeads() async {
+    //AND type = ? , 'indirectorder'
     var dbClient = await db;
-    var result = await dbClient.query('leads', where: 'status = ? AND type = ?', whereArgs: ['Ready', 'indirectorder']);
+    var result = await dbClient.query('leads', where: 'status = ? ', whereArgs: ['Ready']);
     return result;
   }
 
@@ -1027,6 +1028,7 @@ await db.execute(
   }
 
   Future<int> updateLead(Lead lead) async {
+    print('${lead.serverId}  ${lead.id}');
     var dbClient = await db;
     return await dbClient.update('leads', lead.toMap(), where: 'id = ?', whereArgs: [lead.id]);
   }

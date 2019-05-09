@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cbsa_mobile_app/Utils/database_helper.dart';
 import 'package:cbsa_mobile_app/models/lead.dart';
+import 'package:cbsa_mobile_app/models/order.dart';
+import 'package:cbsa_mobile_app/services/lead_service.dart';
+import 'package:http/http.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 class LeadModel extends Model {
@@ -15,8 +19,10 @@ class LeadModel extends Model {
   List _approvedLeads = [];
   List _leadConversions = [];
   List<Lead> _activeLeads = [];
+  List<Map> _localLeads = [];
 
   // getters
+  List<Map> get localLeads => _localLeads;
   Lead get lead => _lead;
   List get leads => _leads;
   List get openLeads => _openLeads;
@@ -28,12 +34,21 @@ class LeadModel extends Model {
   List get leadConversions => _leadConversions;
   List<Lead> get activeLeads => _activeLeads;
 
+  syncLeads(List leads)async{
+    var db = new DatabaseHelper();
+    Response res = await LeadService.saveLeads(leads);
+    List l = jsonDecode(res.body)['leads'];
+    List o = jsonDecode(res.body)['orders'];
+    l.forEach((l)=>db.updateLead(Lead.fromApiMap(l)));
+    // o.forEach((o)=>db.updateOrder(Order.fromMap(o)));
+    notifyListeners();
+  }
+
   // save lead
   Future<int> saveLead(Lead lead) async {
     var db = new DatabaseHelper();
     var x = await db.saveLead(lead);
     notifyListeners();
-
     return x;
   }
 
@@ -49,7 +64,6 @@ class LeadModel extends Model {
     var db = new DatabaseHelper();
     Lead lead = await db.getLead(id);
     this._lead = lead;
-
     notifyListeners();
   }
 
@@ -58,7 +72,8 @@ class LeadModel extends Model {
     var db = new DatabaseHelper();
     List list = await db.getAllLeads();
     this._leads = list;
-
+    // print(leads[0]);
+    this._localLeads = leads.where((l)=>l['serverId']==null).toList();
     notifyListeners();
   }
 
@@ -67,7 +82,6 @@ class LeadModel extends Model {
     var db = new DatabaseHelper();
     List list = await db.getAllOpenLeads();
     this._openLeads = list;
-
     notifyListeners();
   }
 
@@ -76,7 +90,6 @@ class LeadModel extends Model {
     var db = new DatabaseHelper();
     List list = await db.getAllReadyLeads();
     this._readyLeads = list;
-
     notifyListeners();
   }
 
@@ -121,7 +134,6 @@ class LeadModel extends Model {
     var db = new DatabaseHelper();
     int x = await db.updateLead(lead);
     notifyListeners();
-
     return x;
   }
 
@@ -133,7 +145,6 @@ class LeadModel extends Model {
     var db = new DatabaseHelper();
     List list = await db.getAllLeadConversions();
     this._leadConversions = list;
-
     notifyListeners();
   }
 

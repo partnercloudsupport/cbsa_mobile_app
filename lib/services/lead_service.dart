@@ -17,4 +17,21 @@ class LeadService {
     );
     return response;
   }
+
+  static Future<Response> saveLeads(List leads) async {
+    String url = await BaseService.fetchSubDomain();
+    List<Lead> lead =[];
+    leads.forEach(
+      (l)=>lead.add(Lead.map(l))
+    );
+    Map reqlead = {'leads':leads};
+    // print(jsonEncode(reqlead));
+    // print('${url}lead/multiinsert');
+    var response = await client.post(
+      '${url}lead/multiinsert',
+      headers: BaseService.headers,
+      body: jsonEncode(reqlead),
+    );
+    return response;
+  }
 }

@@ -7,7 +7,6 @@ import 'package:cbsa_mobile_app/screens/customers/summary_info_screen.dart';
 import 'package:cbsa_mobile_app/screens/customers/toilet_info_screen.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/service_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class CustomerProfile extends StatefulWidget {
   final Lead lead;

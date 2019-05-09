@@ -42,8 +42,8 @@ class _HomeState extends State<Home> {
   var qrsize = 100.0;
   bool maximized = false;
   SharedPreferences prefs;
-  // FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
-  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
   GlobalKey globalKey = new GlobalKey();
   GlobalKey globalKey1 = new GlobalKey();
@@ -139,8 +139,74 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     initSharedPreferences();
+    var initializationSettingsAndroid =
+        new AndroidInitializationSettings('logo');
+    var initializationSettingsIOS = new IOSInitializationSettings();
+    var initializationSettings = new InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: onSelectNotification);
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) {
+        _showNotificationWithDefaultSound(message['notification']['title'],
+            message['notification']['body'], message['data']['type']);
+      },
+      onResume: (Map<String, dynamic> message) {
+        _showNotificationWithDefaultSound(message['notification']['title'],
+            message['notification']['body'], message['data']['type']);
+      },
+      onLaunch: (Map<String, dynamic> message) {
+        _showNotificationWithDefaultSound(message['notification']['title'],
+            message['notification']['body'], message['data']['type']);
+      },
+    );
+    _firebaseMessaging.requestNotificationPermissions(
+        const IosNotificationSettings(sound: true, badge: true, alert: true));
+    _firebaseMessaging.getToken().then((token) {
+      prefs.setString('firebase_token', token);
+    });
+
     fetchWorkOrders();
     fetchInitialRemoteData();
+  }
+
+  _showNotificationWithDefaultSound(
+      String title, String body, String type) async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, priority: Priority.High);
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: type,
+    );
+  }
+
+  Future onSelectNotification(String payload) async {
+    switch (payload) {
+      case 'customer':
+        Navigator.of(context).pushNamed('customers');
+        break;
+      case 'inspecshedule':
+        Navigator.of(context).pushNamed('customers');
+        break;
+      case 'toiinstall':
+        break;
+      case 'healthinspection':
+        break;
+      case 'complain':
+        break;
+      case 'inspecshedule':
+        break;
+      case 'leadchange':
+        break;
+    }
   }
 
   // Fetch Initial data
