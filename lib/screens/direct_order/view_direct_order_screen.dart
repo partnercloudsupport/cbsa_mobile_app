@@ -1,9 +1,8 @@
 import 'dart:async';
 
 import 'package:cbsa_mobile_app/Utils/database_helper.dart';
-import 'package:cbsa_mobile_app/models/direct_order.dart';
+import 'package:cbsa_mobile_app/app_translations.dart';
 import 'package:cbsa_mobile_app/models/lead.dart';
-import 'package:cbsa_mobile_app/scoped_model/task_model.dart';
 import 'package:cbsa_mobile_app/screens/direct_order/direct_order_task.dart';
 import 'package:cbsa_mobile_app/screens/direct_order/update_direct_order_screen.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/block.dart';
@@ -12,7 +11,6 @@ import 'package:cbsa_mobile_app/setup_models.dart/territory.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/toilet_type.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:scoped_model/scoped_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ViewDirectOrder extends StatefulWidget {
@@ -24,54 +22,6 @@ class ViewDirectOrder extends StatefulWidget {
 }
 
 class ViewDirectOrderState extends State<ViewDirectOrder> {
-  Territory _territory;
-  SubTerritory _subTerritory = SubTerritory.empty();
-  Block _block = Block.empty();
-  ToiletType _toiletType = ToiletType.empty();
-
-  void initState() {
-    super.initState();
-
-    // print(widget.lead.id);
-
-    // getTerritory(widget.lead.territory);
-    // getSubTerritory(widget.lead.subTerritory);
-    // getToiletType(widget.lead.toiletType);
-  }
-
-  // void getTerritory(int id) async {
-  //   var db = DatabaseHelper();
-  //   Territory territory = await db.getTerritory(id);
-  //   setState(() {
-  //    this._territory = territory;
-  //   });
-  // }
-
-  // void getSubTerritory(int id) async {
-  //   var db = DatabaseHelper();
-  //   SubTerritory subTerritory = await db.getSubTerritory(id);
-  //   setState(() {
-  //    this._subTerritory = subTerritory;
-  //   });
-  // }
-
-  // void getBlock(int id) async {
-  //   var db = DatabaseHelper();
-  //   Block block = await db.getBlock(id);
-  //   // print(block);
-  //   setState(() {
-  //    this._block = block;
-  //   });
-  //   print(this._block);
-  // }
-
-  // void getToiletType(int id) async {
-  //   var db = DatabaseHelper();
-  //   ToiletType toiletType = await db.getToiletType(id);
-  //   setState(() {
-  //    this._toiletType = toiletType;
-  //   });
-  // }
 
   Future<Territory> getTerritory(int id) async {
     var db = DatabaseHelper();
@@ -112,7 +62,7 @@ class ViewDirectOrderState extends State<ViewDirectOrder> {
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Text(
-                  'Territory',
+                  AppTranslations.of(context).text("territory"),
                   style: TextStyle(fontSize: 17.0),
                   textAlign: TextAlign.start,
                 ),
@@ -146,7 +96,7 @@ class ViewDirectOrderState extends State<ViewDirectOrder> {
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Text(
-                  ' Sub-Territory',
+                  AppTranslations.of(context).text("subTerritory"),
                   style: TextStyle(fontSize: 17.0),
                   textAlign: TextAlign.start,
                 ),
@@ -180,7 +130,7 @@ class ViewDirectOrderState extends State<ViewDirectOrder> {
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Text(
-                  'Block',
+                  AppTranslations.of(context).text("block"),
                   style: TextStyle(fontSize: 17.0),
                   textAlign: TextAlign.start,
                 ),
@@ -214,7 +164,7 @@ class ViewDirectOrderState extends State<ViewDirectOrder> {
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Text(
-                  'Toilet Type',
+                  AppTranslations.of(context).text("toiletType"),
                   style: TextStyle(fontSize: 17.0),
                   textAlign: TextAlign.start,
                 ),
@@ -238,8 +188,6 @@ class ViewDirectOrderState extends State<ViewDirectOrder> {
   }
 
   Widget _displayText(String title, String value) {
-    String val = value == '' ? 'NULL' : value;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -296,7 +244,7 @@ class ViewDirectOrderState extends State<ViewDirectOrder> {
         Padding(
           padding: EdgeInsets.only(left: 15.0),
           child: Text(
-            'Location',
+            AppTranslations.of(context).text("location"),
             style: TextStyle(fontSize: 17.0),
             textAlign: TextAlign.start,
           ),
@@ -314,52 +262,8 @@ class ViewDirectOrderState extends State<ViewDirectOrder> {
     );
   }
 
-  Widget _displayStringArray(String title, List<String> list) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(left: 15.0),
-          child: Text(
-            title,
-            style: TextStyle(fontSize: 17.0),
-            textAlign: TextAlign.start,
-          ),
-        ),
-        // Wrap(
-        //   children: <Widget>[
-        //     ListView.builder(
-        //       itemCount: list.length,
-        //       itemBuilder: (BuildContext context,int index){
-        //         return Text('jj');
-        //       },
-        //     )
-        //   ],
-        // )
-      ],
-    );
-  }
-
-  Widget _displayDate(String title, String date) {
-    String dDate = DateFormat.yMMMd().format(DateTime.parse(date));
-
-    return Container(
-      padding: EdgeInsets.only(bottom: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text('$title:'),
-          Text(
-            '$dDate',
-          )
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    List<String> views = ['Tasks', 'Follow Ups', 'Edit'];
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -503,21 +407,18 @@ class ViewDirectOrderState extends State<ViewDirectOrder> {
                     _getTerritory(widget.lead.territory),
                     _getSubTerritory(widget.lead.subTerritory),
                     _getBlock(widget.lead.block),
-                    // _displayText('Territory', _territory.name),
-                    // _displayText('Sub-Territory', _subTerritory.name),
-                    // _displayText('Block', _block.name),
-                    _displayText('Address', widget.lead.address),
-                    _displayText('Gender', widget.lead.gender),
-                    _displayText('Primary Telephone', widget.lead.primaryTelephone),
-                    _displayText('Secondary Telephone', widget.lead.secondaryTelephone),
+                    _displayText(AppTranslations.of(context).text("address"), widget.lead.address),
+                    _displayText(AppTranslations.of(context).text("gender"), widget.lead.gender),
+                    _displayText(AppTranslations.of(context).text("primaryPhoneNumber"), widget.lead.primaryTelephone),
+                    _displayText(AppTranslations.of(context).text("secondaryPhoneNumber"), widget.lead.secondaryTelephone),
                     _getToiletType(widget.lead.toiletType),
-                    _displayNumber('Number of Toilets', widget.lead.noOfToilets),
-                    _displayNumber('Number of Male Adults', widget.lead.noOfMaleAdults),
-                    _displayNumber('Number of Female Adults',
+                    _displayNumber(AppTranslations.of(context).text("numberOfToilets"), widget.lead.noOfToilets),
+                    _displayNumber(AppTranslations.of(context).text("numberOfMaleAdults"), widget.lead.noOfMaleAdults),
+                    _displayNumber(AppTranslations.of(context).text("numberOfFemaleAdults"),
                         widget.lead.noOfFemaleAdults),
-                    _displayNumber('Number of Male Children',
+                    _displayNumber(AppTranslations.of(context).text("numberOfMaleChildren"),
                         widget.lead.noOfMaleChildren),
-                    _displayNumber('Number of Female Children',
+                    _displayNumber(AppTranslations.of(context).text("numberOfFemaleChildren"),
                         widget.lead.noOfFemaleChildren),
                     _locationCoordinates(
                         widget.lead.latitude, widget.lead.longitude),
@@ -527,257 +428,9 @@ class ViewDirectOrderState extends State<ViewDirectOrder> {
             ),
           ],
         ),
-        // Card(
-        //   // color: Colors.transparent,
-        //   child: Column(
-        //     children: <Widget>[
-        //       Expanded(
-        //         flex: 1,
-        //         child: Container(
-        //           color: Colors.red,
-        //         ),
-        //       ),
-        //       Expanded(
-        //         flex: 5,
-        //         child: Padding(
-        //           padding: EdgeInsets.only(top: 20.0),
-        //           child: ListView(
-        //             children: <Widget>[
-        //               // _displayText('First Name', widget.lead.firstName),
-        //               // _displayText('Last Name', widget.lead.lastName),
-        //               _displayText('Territory', widget.lead.territory),
-        //               _displayText('Sub-Territory', widget.lead.subTerritory),
-        //               _displayText('Block', widget.lead.block),
-        //               _displayText('Address', widget.lead.address),
-        //               _displayText('Gender', widget.lead.gender),
-        //               _displayText(
-        //                   'Primary Telephone', widget.lead.primaryTelephone),
-        //               _displayText('Secondary Telephone',
-        //                   widget.lead.secondaryTelephone),
-        //               _displayText('Toilet Type', widget.lead.toiletType),
-        //               _displayNumber(
-        //                   'Number of Toilets', widget.lead.noOfToilets),
-        //               _displayNumber(
-        //                   'Number of Male Adults', widget.lead.noOfMaleAdults),
-        //               _displayNumber('Number of Female Adults',
-        //                   widget.lead.noOfFemaleAdults),
-        //               _displayNumber('Number of Male Children',
-        //                   widget.lead.noOfMaleChildren),
-        //               _displayNumber('Number of Female Children',
-        //                   widget.lead.noOfFemaleChildren),
-        //               _locationCoordinates(
-        //                   widget.lead.latitude, widget.lead.longitude),
-        //               // _displayStringArray('Information Sources',
-        //               //     widget.lead.infoSourceSelected),
-        //               // _displayText('Lead Type', widget.lead.leadType),
-        //               // _displayText('Disability', widget.lead.disability),
-        //               // _displayStringArray(
-        //               //     'Enrollment Reasons', widget.lead.reasonsSelected),
-        //               // _displayText('Status', widget.lead.status),
-        //               // _displayText('Comments', widget.lead.comments),
-        //               // _displayText('Network Service Provider',
-        //               //     widget.lead.serviceProvider),
-        //               // _displayText('Phone Type', widget.lead.telephoneType),
-        //               // _displayText(
-        //               //     'Salaried Worker', widget.lead.salariedWorker),
-        //               // _displayStringArray(
-        //               //     'Other Paid Services', widget.lead.servicesSelected),
-        //               // _displayStringArray(
-        //               //     'Toilet Type', widget.lead.typeSelected),
-        //               // _displayStringArray(
-        //               //     'Toilet Security', widget.lead.securitySelected),
-        //               // _displayStringArray(
-        //               //     'Toilet Privacy', widget.lead.privacySelected),
-        //               // _displayDate('Follow Up Date', widget.lead.followupDate),
-        //               // _displayText('Site Inspection Date',
-        //               //     widget.lead.siteInspectionDate),
-        //               // _displayText(
-        //               //     'Toilet Installation Date', widget.lead.installDate),
-        //             ],
-        //           ),
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
       )
     );
   }
-
-//   Widget _displayText(String title, String value) {
-//     String val = value == '' ? 'NULL' : value;
-
-//     return Container(
-//       padding: EdgeInsets.only(bottom: 5),
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         children: <Widget>[
-//           Text('$title:'),
-//           Text('$val', style: TextStyle(fontSize: 18),)
-//         ],
-//       ),
-//     );
-//   }
-
-//   Widget _displayNumber(String title, int value) {
-//     return Container(
-//       padding: EdgeInsets.only(bottom: 5),
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         children: <Widget>[
-//           Text('$title:'),
-//           Text('$value', style: TextStyle(fontSize: 18),)
-//         ],
-//       ),
-//     );
-//   }
-
-//   Widget _locationCoordinates(double latitude, double longitude) {
-//     return Container(
-//       padding: EdgeInsets.only(bottom: 5),
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         children: <Widget>[
-//           Text('Coordinates:'),
-//           Text('Lat: $latitude, Lng: $longitude', style: TextStyle(fontSize: 18),)
-//         ],
-//       ),
-//     );
-//   }
-
-//   Widget _displayStringArray(String title, List<String> list) {
-//     String displayList = '';
-
-//     if(list.length == 0) {
-//       displayList = 'NULL';
-//     } else {
-//       for(int i = 0; i < list.length; i++) {
-//         displayList = displayList + list[0] + ' ';
-//       }
-//     }
-
-//     return Container(
-//       padding: EdgeInsets.only(bottom: 5),
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         children: <Widget>[
-//           Text('$title:'),
-//           Text('$displayList', style: TextStyle(fontSize: 18),)
-//         ],
-//       ),
-//     );
-//   }
-
-//   Widget _displayDate(String title, String date) {
-//     String dDate = date == null ? 'NULL' : DateFormat.yMMMd().format(DateTime.parse(date));
-
-//     return Container(
-//       padding: EdgeInsets.only(bottom: 5),
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         children: <Widget>[
-//           Text('$title:'),
-//           Text('$dDate', style: TextStyle(fontSize: 18),)
-//         ],
-//       ),
-//     );
-//   }
-
-// void showAlertDialog(String message, TaskModel model, int index) {
-//     showDialog(
-//       context: context,
-//       builder: (BuildContext context) {
-//         return AlertDialog(
-//           content: message == 'archive' ? Text('Archive Record') : Text(''),
-//           actions: <Widget>[
-//             FlatButton(
-//               child: Text('Yes'),
-//               onPressed: () {
-//                 model.archiveLead(model.leadFollowups[index]['id']);
-//                 model.fetchLeads();
-//                 Navigator.of(context).pop();
-//               },
-//             ),
-//             FlatButton(
-//               child: Text('No'),
-//               onPressed: () {
-//                 Navigator.of(context).pop();
-//               },
-//             )
-//           ],
-//         );
-//       },
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     List<String> views = ['Tasks',  'Edit',];
-//     return ScopedModel<TaskModel>(
-//       model: TaskModel(),
-//       child: ScopedModelDescendant<TaskModel>(
-//       builder: (context, child, model) {
-//       return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Lead Details'),
-//         actions: <Widget>[
-//           PopupMenuButton<String>(
-//             onSelected: _itemSelected,
-//             itemBuilder: (BuildContext context) {
-//               return views.map((view) {
-//                 return PopupMenuItem<String>(
-//                   value: view,
-//                   child: Text(view),
-//                 );
-//               }).toList();
-//             }
-//           )
-//         ],
-//       ),
-//       body: Container(
-//         padding: EdgeInsets.all(30),
-//         child: ListView(
-//           children: <Widget>[
-//             _displayText('First Name', widget.lead.firstName),
-//             _displayText('Last Name', widget.lead.lastName),
-//             // _displayText('Territory', widget.lead.territory),
-//             // _displayText('Sub-Territory', widget.lead.subTerritory),
-//             // _displayText('Block', widget.lead.block),
-//             // _displayText('Address', widget.lead.address),
-//             // _displayText('Gender', widget.lead.gender),
-//             // _displayText('Primary Telephone', widget.lead.primaryTelephone),
-//             // _displayText('Secondary Telephone', widget.lead.secondaryTelephone),
-//             // _displayText('Toilet Type', widget.lead.toiletType),
-//             // _displayNumber('Number of Toilets', widget.lead.noOfToilets),
-//             // _displayNumber('Number of Male Adults', widget.lead.noOfMaleAdults),
-//             // _displayNumber('Number of Female Adults', widget.lead.noOfFemaleAdults),
-//             // _displayNumber('Number of Male Children', widget.lead.noOfMaleChildren),
-//             // _displayNumber('Number of Female Children', widget.lead.noOfFemaleChildren),
-//             // _locationCoordinates(widget.lead.latitude, widget.lead.longitude),
-//             // _displayStringArray('Information Sources', widget.lead.infoSourceSelected),
-//             // _displayText('Lead Type', widget.lead.leadType),
-//             // _displayText('Disability', widget.lead.disability),
-//             // _displayStringArray('Enrollment Reasons', widget.lead.reasonsSelected),
-//             // _displayText('Status', widget.lead.status),
-//             // _displayText('Comments', widget.lead.comments),
-//             // _displayText('Network Service Provider', widget.lead.serviceProvider),
-//             // _displayText('Phone Type', widget.lead.telephoneType),
-//             // _displayText('Salaried Worker', widget.lead.salariedWorker),
-//             // _displayStringArray('Other Paid Services', widget.lead.servicesSelected),
-//             // _displayStringArray('Toilet Type', widget.lead.typeSelected),
-//             // _displayStringArray('Toilet Security', widget.lead.securitySelected),
-//             // _displayStringArray('Toilet Privacy', widget.lead.privacySelected),
-//             // _displayDate('Site Inspection Date', widget.lead.siteInspectionDate),
-//             // _displayDate('Toilet Installation Date', widget.lead.installDate),
-//           ],
-//         ),
-//       ),
-//     );
-
-//                 }) ,  
-
-//     );
-  // }
 
   _itemSelected(String item) {
     if(item == 'Tasks') {

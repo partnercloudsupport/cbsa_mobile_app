@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:cbsa_mobile_app/Utils/database_helper.dart';
+import 'package:cbsa_mobile_app/app_translations.dart';
 import 'package:cbsa_mobile_app/models/work_order.dart';
 import 'package:cbsa_mobile_app/scoped_model/task_model.dart';
 import 'package:cbsa_mobile_app/screens/toilet_installation_and_servicing/toilet_installation_screen.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/item.dart';
+import 'package:cbsa_mobile_app/setup_models.dart/sub_territory.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/territory.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/toilet_type.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/work_order.dart';
@@ -34,7 +36,7 @@ class _WorkOrderViewState extends State<WorkOrderView> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Expanded(
-            child: Text('Name:'),
+            child: Text(AppTranslations.of(context).text("name")),
           ),
           Expanded(
             child: Align(
@@ -50,24 +52,24 @@ class _WorkOrderViewState extends State<WorkOrderView> {
     ));
   }
 
-  Future<Territory> _getTerritory(int id) async {
+  Future<SubTerritory> _getSubTerritory(int id) async {
     var db = DatabaseHelper();
-    Territory territory = await db.getTerritory(id);
+    SubTerritory subTerritory= await db.getSubTerritory(id);
 
-    return territory;
+    return subTerritory;
   }
 
   Widget _territory() {
     return FutureBuilder(
-      future: _getTerritory(widget.workOrder.territory),
-      builder: (BuildContext context, AsyncSnapshot<Territory> snapshot) {
+      future: _getSubTerritory(widget.workOrder.subTerritory),
+      builder: (BuildContext context, AsyncSnapshot<SubTerritory> snapshot) {
         return Container(
           padding: EdgeInsets.only(bottom: 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(
-                child: Text('Territory:'),
+                child: Text(AppTranslations.of(context).text("subTerritory")),
               ),
               snapshot.hasData
                   ? Expanded(
@@ -103,7 +105,7 @@ class _WorkOrderViewState extends State<WorkOrderView> {
         children: <Widget>[
           Expanded(
             flex: 1,
-            child: Text('Address:'),
+            child: Text(AppTranslations.of(context).text("address")),
           ),
           Expanded(
             flex: 1,
@@ -138,7 +140,7 @@ class _WorkOrderViewState extends State<WorkOrderView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(
-                child: Text('Toilet Type:'),
+                child: Text(AppTranslations.of(context).text("toiletType")),
               ),
               snapshot.hasData
                   ? Expanded(
@@ -183,7 +185,7 @@ class _WorkOrderViewState extends State<WorkOrderView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Expanded(
-                child: Text('Work Order:'),
+                child: Text(AppTranslations.of(context).text("workOrder")),
               ),
               snapshot.hasData
                   ? Expanded(
@@ -244,7 +246,7 @@ class _WorkOrderViewState extends State<WorkOrderView> {
           children: <Widget>[
             Align(
               alignment: FractionalOffset.centerLeft,
-              child: Text('Items Required:'),
+              child: Text(AppTranslations.of(context).text("itemsRequired")),
             ),
             snapshot.hasData
                 ? Column(
@@ -282,7 +284,7 @@ class _WorkOrderViewState extends State<WorkOrderView> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Expanded(
-            child: Text('Toilet Installation Date:'),
+            child: Text(AppTranslations.of(context).text("toiletInstallationDate")),
           ),
           Expanded(
             child: Align(
@@ -305,7 +307,7 @@ class _WorkOrderViewState extends State<WorkOrderView> {
         alignment: FractionalOffset.center,
         child: GestureDetector(
           child: Text(
-            'Install Toilet >',
+            AppTranslations.of(context).text("installToilet"),
             style: TextStyle(color: Colors.blue, fontSize: 18),
           ),
           onTap: () async {
@@ -316,6 +318,7 @@ class _WorkOrderViewState extends State<WorkOrderView> {
                     builder: (context) => ToiletInstallation(
                           itemList: itemList,
                           leadId: widget.workOrder.id,
+                          workOrderId: widget.workOrder.workOrderId
                         )));
           },
         ),

@@ -165,7 +165,7 @@ class DatabaseHelper {
   initDb() async {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'cbsa.db');
-      await deleteDatabase(path); 
+      // await deleteDatabase(path); 
     var db = await openDatabase(path, version: 1, onCreate: _onCreate);
     return db;
   }
@@ -235,7 +235,7 @@ class DatabaseHelper {
     );
     // TOILET INSTALLATIONS
     await db.execute(
-      'CREATE TABLE toiletInstallation(id INTEGER PRIMARY KEY, leadid INTEGER, userid INTEGER, date TEXT, qrcode TEXT, serialno TEXT, items TEXT, toiletimage TEXT)'
+      'CREATE TABLE toiletInstallation(id INTEGER PRIMARY KEY, leadid INTEGER, userid INTEGER, date TEXT, qrcode TEXT, serialno TEXT, items TEXT, toiletimage TEXT, workOrderId INTEGER)'
     );
     // PAYMENTS
     await db.execute(

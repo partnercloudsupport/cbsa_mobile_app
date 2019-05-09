@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:cbsa_mobile_app/Utils/database_helper.dart';
+import 'package:cbsa_mobile_app/app_translations.dart';
 import 'package:cbsa_mobile_app/models/lead.dart';
-import 'package:cbsa_mobile_app/scoped_model/initial_setup_model.dart';
 import 'package:cbsa_mobile_app/screens/follow_ups/followup_screen.dart';
 import 'package:cbsa_mobile_app/screens/lead/task_screen.dart';
 import 'package:cbsa_mobile_app/screens/lead/update_lead_screen.dart';
@@ -11,8 +11,6 @@ import 'package:cbsa_mobile_app/setup_models.dart/sub_territory.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/territory.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/toilet_type.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:scoped_model/scoped_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ViewLead extends StatefulWidget {
@@ -24,15 +22,6 @@ class ViewLead extends StatefulWidget {
 }
 
 class ViewLeadState extends State<ViewLead> {
-  Territory _territory = Territory.empty();
-  SubTerritory _subTerritory = SubTerritory.empty();
-  Block _block = Block.empty();
-  ToiletType _toiletType = ToiletType.empty();
-
-  void initState() {
-    super.initState();
-  }
-
   Future<Territory> getTerritory(int id) async {
     var db = DatabaseHelper();
     Territory territory = await db.getTerritory(id);
@@ -72,7 +61,7 @@ class ViewLeadState extends State<ViewLead> {
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Text(
-                  'Territory',
+                  AppTranslations.of(context).text("territory"),
                   style: TextStyle(fontSize: 17.0),
                   textAlign: TextAlign.start,
                 ),
@@ -106,7 +95,7 @@ class ViewLeadState extends State<ViewLead> {
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Text(
-                  ' Sub-Territory',
+                  AppTranslations.of(context).text("subTerritory"),
                   style: TextStyle(fontSize: 17.0),
                   textAlign: TextAlign.start,
                 ),
@@ -140,7 +129,7 @@ class ViewLeadState extends State<ViewLead> {
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Text(
-                  'Block',
+                  AppTranslations.of(context).text("block"),
                   style: TextStyle(fontSize: 17.0),
                   textAlign: TextAlign.start,
                 ),
@@ -174,7 +163,7 @@ class ViewLeadState extends State<ViewLead> {
               Padding(
                 padding: EdgeInsets.only(left: 15.0),
                 child: Text(
-                  'Toilet Type',
+                  AppTranslations.of(context).text("toiletType"),
                   style: TextStyle(fontSize: 17.0),
                   textAlign: TextAlign.start,
                 ),
@@ -198,8 +187,6 @@ class ViewLeadState extends State<ViewLead> {
   }
 
   Widget _displayText(String title, String value) {
-    String val = value == '' ? 'NULL' : value;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -274,52 +261,8 @@ class ViewLeadState extends State<ViewLead> {
     );
   }
 
-  Widget _displayStringArray(String title, List<String> list) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(left: 15.0),
-          child: Text(
-            title,
-            style: TextStyle(fontSize: 17.0),
-            textAlign: TextAlign.start,
-          ),
-        ),
-        // Wrap(
-        //   children: <Widget>[
-        //     ListView.builder(
-        //       itemCount: list.length,
-        //       itemBuilder: (BuildContext context,int index){
-        //         return Text('jj');
-        //       },
-        //     )
-        //   ],
-        // )
-      ],
-    );
-  }
-
-  Widget _displayDate(String title, String date) {
-    String dDate = DateFormat.yMMMd().format(DateTime.parse(date));
-
-    return Container(
-      padding: EdgeInsets.only(bottom: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Text('$title:'),
-          Text(
-            '$dDate',
-          )
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    List<String> views = ['Tasks', 'Follow Ups', 'Edit'];
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -463,16 +406,16 @@ class ViewLeadState extends State<ViewLead> {
                     _getTerritory(widget.lead.territory),
                     _getSubTerritory(widget.lead.subTerritory),
                     _getBlock(widget.lead.block),
-                    _displayText('Address', widget.lead.address),
-                    _displayText('Gender', widget.lead.gender),
-                    _displayText('Primary Telephone', widget.lead.primaryTelephone),
-                    _displayText('Secondary Telephone', widget.lead.secondaryTelephone),
+                    _displayText(AppTranslations.of(context).text("address"), widget.lead.address),
+                    _displayText(AppTranslations.of(context).text("gender"), widget.lead.gender),
+                    _displayText(AppTranslations.of(context).text("primaryPhoneNumber"), widget.lead.primaryTelephone),
+                    _displayText(AppTranslations.of(context).text("secondaryPhoneNumber"), widget.lead.secondaryTelephone),
                     _getToiletType(widget.lead.toiletType),
-                    _displayNumber('Number of Toilets', widget.lead.noOfToilets),
-                    _displayNumber('Number of Male Adults', widget.lead.noOfMaleAdults),
-                    _displayNumber('Number of Female Adults', widget.lead.noOfFemaleAdults),
-                    _displayNumber('Number of Male Children', widget.lead.noOfMaleChildren),
-                    _displayNumber('Number of Female Children', widget.lead.noOfFemaleChildren),
+                    _displayNumber(AppTranslations.of(context).text("numberOfToilets"), widget.lead.noOfToilets),
+                    _displayNumber(AppTranslations.of(context).text("numberOfMaleAdults"), widget.lead.noOfMaleAdults),
+                    _displayNumber(AppTranslations.of(context).text("numberOfFemaleAdults"), widget.lead.noOfFemaleAdults),
+                    _displayNumber(AppTranslations.of(context).text("numberOfMaleChildren"), widget.lead.noOfMaleChildren),
+                    _displayNumber(AppTranslations.of(context).text("numberOfFemaleChildren"), widget.lead.noOfFemaleChildren),
                     _locationCoordinates(widget.lead.latitude, widget.lead.longitude),
                   ],
                 ),
@@ -480,79 +423,6 @@ class ViewLeadState extends State<ViewLead> {
             ),
           ],
         ),
-        // Card(
-        //   // color: Colors.transparent,
-        //   child: Column(
-        //     children: <Widget>[
-        //       Expanded(
-        //         flex: 1,
-        //         child: Container(
-        //           color: Colors.red,
-        //         ),
-        //       ),
-        //       Expanded(
-        //         flex: 5,
-        //         child: Padding(
-        //           padding: EdgeInsets.only(top: 20.0),
-        //           child: ListView(
-        //             children: <Widget>[
-        //               // _displayText('First Name', widget.lead.firstName),
-        //               // _displayText('Last Name', widget.lead.lastName),
-        //               _displayText('Territory', widget.lead.territory),
-        //               _displayText('Sub-Territory', widget.lead.subTerritory),
-        //               _displayText('Block', widget.lead.block),
-        //               _displayText('Address', widget.lead.address),
-        //               _displayText('Gender', widget.lead.gender),
-        //               _displayText(
-        //                   'Primary Telephone', widget.lead.primaryTelephone),
-        //               _displayText('Secondary Telephone',
-        //                   widget.lead.secondaryTelephone),
-        //               _displayText('Toilet Type', widget.lead.toiletType),
-        //               _displayNumber(
-        //                   'Number of Toilets', widget.lead.noOfToilets),
-        //               _displayNumber(
-        //                   'Number of Male Adults', widget.lead.noOfMaleAdults),
-        //               _displayNumber('Number of Female Adults',
-        //                   widget.lead.noOfFemaleAdults),
-        //               _displayNumber('Number of Male Children',
-        //                   widget.lead.noOfMaleChildren),
-        //               _displayNumber('Number of Female Children',
-        //                   widget.lead.noOfFemaleChildren),
-        //               _locationCoordinates(
-        //                   widget.lead.latitude, widget.lead.longitude),
-        //               // _displayStringArray('Information Sources',
-        //               //     widget.lead.infoSourceSelected),
-        //               // _displayText('Lead Type', widget.lead.leadType),
-        //               // _displayText('Disability', widget.lead.disability),
-        //               // _displayStringArray(
-        //               //     'Enrollment Reasons', widget.lead.reasonsSelected),
-        //               // _displayText('Status', widget.lead.status),
-        //               // _displayText('Comments', widget.lead.comments),
-        //               // _displayText('Network Service Provider',
-        //               //     widget.lead.serviceProvider),
-        //               // _displayText('Phone Type', widget.lead.telephoneType),
-        //               // _displayText(
-        //               //     'Salaried Worker', widget.lead.salariedWorker),
-        //               // _displayStringArray(
-        //               //     'Other Paid Services', widget.lead.servicesSelected),
-        //               // _displayStringArray(
-        //               //     'Toilet Type', widget.lead.typeSelected),
-        //               // _displayStringArray(
-        //               //     'Toilet Security', widget.lead.securitySelected),
-        //               // _displayStringArray(
-        //               //     'Toilet Privacy', widget.lead.privacySelected),
-        //               // _displayDate('Follow Up Date', widget.lead.followupDate),
-        //               // _displayText('Site Inspection Date',
-        //               //     widget.lead.siteInspectionDate),
-        //               // _displayText(
-        //               //     'Toilet Installation Date', widget.lead.installDate),
-        //             ],
-        //           ),
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
       )
     );
   }

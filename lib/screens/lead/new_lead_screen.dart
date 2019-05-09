@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cbsa_mobile_app/Utils/database_helper.dart';
+import 'package:cbsa_mobile_app/app_translations.dart';
 import 'package:cbsa_mobile_app/models/lead.dart';
 import 'package:cbsa_mobile_app/scoped_model/initial_setup_model.dart';
 import 'package:cbsa_mobile_app/scoped_model/lead_model.dart';
@@ -348,14 +349,14 @@ class _NewLeadState extends State<NewLead> {
   // Personal Details Widgets
   Widget _getFirstName() {
     return TextFormField(
-      decoration: InputDecoration(labelText: 'First Name', hasFloatingPlaceholder: true),
+      decoration: InputDecoration(labelText: AppTranslations.of(context).text("firstName"), hasFloatingPlaceholder: true),
       controller: _firstNameController,
       onFieldSubmitted: (value) {
         _firstNameController.text = value;
       },
       validator: (value) {
         if (value.isEmpty) {
-          return 'First Name is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onSaved: (value) {
@@ -369,14 +370,14 @@ class _NewLeadState extends State<NewLead> {
   Widget _getLastName() {
     return TextFormField(
       decoration:
-          InputDecoration(labelText: 'Last Name', hasFloatingPlaceholder: true),
+          InputDecoration(labelText: AppTranslations.of(context).text("lastName"), hasFloatingPlaceholder: true),
       controller: _lastNameController,
       onFieldSubmitted: (value) {
         _lastNameController.text = value;
       },
       validator: (value) {
         if (value.isEmpty) {
-          return 'Last Name is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onSaved: (value) {
@@ -390,7 +391,7 @@ class _NewLeadState extends State<NewLead> {
   Widget _getOtherNames() {
     return TextFormField(
       decoration: InputDecoration(
-          labelText: 'Other Names', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("otherNames"), hasFloatingPlaceholder: true),
       controller: _otherNamesController,
       onFieldSubmitted: (value) {
         _otherNamesController.text = value;
@@ -409,9 +410,9 @@ class _NewLeadState extends State<NewLead> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Territory'),
+            Text(AppTranslations.of(context).text("territory")),
             DropdownButton<Territory>(
-              hint: Text('Territory'),
+              hint: Text(AppTranslations.of(context).text("territory")),
               value: _territory,
               items: _territoryList.map((Territory territory) {
                 return new DropdownMenuItem<Territory>(
@@ -460,10 +461,10 @@ class _NewLeadState extends State<NewLead> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Sub-Territory'),
+            Text(AppTranslations.of(context).text("subTerritory")),
             _subTerritoryList.isNotEmpty
             ? DropdownButton<SubTerritory>(
-              hint: Text('Sub-Territory'),
+              hint: Text(AppTranslations.of(context).text("subTerritory")),
               value: _subTerritory,
               items: this._subTerritoryList.map((SubTerritory subTerritory) {
                 return DropdownMenuItem<SubTerritory>(
@@ -503,10 +504,10 @@ class _NewLeadState extends State<NewLead> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Block'),
+        Text(AppTranslations.of(context).text("block")),
         _blockList.isNotEmpty
         ? DropdownButton<Block>(
-          hint: Text('Block'),
+          hint: Text(AppTranslations.of(context).text("block")),
           value: _block,
           items: _blockList.map((block) {
             return DropdownMenuItem<Block>(
@@ -531,9 +532,9 @@ class _NewLeadState extends State<NewLead> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Gender'),
+            Text(AppTranslations.of(context).text("gender")),
             DropdownButton<String>(
-              hint: Text('Gender'),
+              hint: Text(AppTranslations.of(context).text("gender")),
               value: _gender,
               items: _genderList.map((gender) {
                 return DropdownMenuItem<String>(
@@ -563,7 +564,7 @@ class _NewLeadState extends State<NewLead> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Disabled?'),
+        Text(AppTranslations.of(context).text("disabled")),
         DropdownButton<String>(
           value: _disability,
           items: _disabilityList.map((disability) {
@@ -586,9 +587,9 @@ class _NewLeadState extends State<NewLead> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Lead Type'),
+        Text(AppTranslations.of(context).text("leadType")),
         DropdownButton<LeadType>(
-          hint: Text('Lead Type'),
+          hint: Text(AppTranslations.of(context).text("leadType")),
           value: _leadType,
           items: _leadTypeList.map((leadType) {
             return DropdownMenuItem<LeadType>(
@@ -612,7 +613,7 @@ class _NewLeadState extends State<NewLead> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Source of Information'),
+          child: Text(AppTranslations.of(context).text("sourceOfInformation")),
         ),
         Expanded(
           flex: 2,
@@ -648,7 +649,7 @@ class _NewLeadState extends State<NewLead> {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.only(right: 20), 
-              child: Text('Referred?')
+              child: Text(AppTranslations.of(context).text("referred"))
             ),
             DropdownButton<String>(
               value: _referred,
@@ -670,7 +671,7 @@ class _NewLeadState extends State<NewLead> {
           child: _referred == 'Yes'
               ? TextFormField(
                   decoration: InputDecoration(
-                      labelText: 'Name of Referee',
+                      labelText: AppTranslations.of(context).text("refereeName"),
                       hasFloatingPlaceholder: true),
                   controller: _referredByController,
                   onFieldSubmitted: (value) {
@@ -678,7 +679,7 @@ class _NewLeadState extends State<NewLead> {
                   },
                   validator: (value) {
                     if (value.isEmpty) {
-                      return 'Name of Referee is Required';
+                      return AppTranslations.of(context).text("required");
                     }
                   },
                   onSaved: (value) {
@@ -700,9 +701,9 @@ class _NewLeadState extends State<NewLead> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Toilet Type'),
+            Text(AppTranslations.of(context).text("toiletType")),
             DropdownButton<ToiletType>(
-              hint: Text('Toilet Type'),
+              hint: Text(AppTranslations.of(context).text("toiletType")),
               value: _toiletType,
               items: _toiletTypeList.map((toiletType) {
                 return DropdownMenuItem<ToiletType>(
@@ -732,7 +733,7 @@ class _NewLeadState extends State<NewLead> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Toilets', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfToilets"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfToiletsController,
       onFieldSubmitted: (value) {
@@ -740,7 +741,7 @@ class _NewLeadState extends State<NewLead> {
       },
       validator: (value) {
         if (value.isEmpty) {
-          return 'Number of Toilets is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onSaved: (value) {
@@ -755,7 +756,7 @@ class _NewLeadState extends State<NewLead> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Male Adults', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfMaleAdults"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfMaleAdultsController,
       onFieldSubmitted: (value) {
@@ -773,7 +774,7 @@ class _NewLeadState extends State<NewLead> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Female Adults', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfFemaleAdults"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfFemaleAdultsController,
       onFieldSubmitted: (value) {
@@ -791,7 +792,7 @@ class _NewLeadState extends State<NewLead> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Male Children', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfMaleChildren"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfMaleChildrenController,
       onFieldSubmitted: (value) {
@@ -809,7 +810,7 @@ class _NewLeadState extends State<NewLead> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Female Children', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfFemaleChildren"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfFemaleChildrenController,
       onFieldSubmitted: (value) {
@@ -827,11 +828,11 @@ class _NewLeadState extends State<NewLead> {
   Widget _getAddress() {
     return TextFormField(
       decoration: InputDecoration(
-          labelText: 'Address / House Number', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("address"), hasFloatingPlaceholder: true),
       controller: _addressController,
       validator: (value) {
         if (value.isEmpty) {
-          return 'Address is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onFieldSubmitted: (value) {
@@ -849,7 +850,7 @@ class _NewLeadState extends State<NewLead> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Primary Phone Number', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("primaryPhoneNumber"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.phone,
       controller: _primaryNumberController,
       onFieldSubmitted: (value) {
@@ -857,7 +858,7 @@ class _NewLeadState extends State<NewLead> {
       },
       validator: (value) {
         if (value.isEmpty) {
-          return 'Primary Telephone is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onSaved: (value) {
@@ -872,7 +873,7 @@ class _NewLeadState extends State<NewLead> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Secondary Phone Number', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("secondaryPhoneNumber"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.phone,
       controller: _secondaryNumbercontroller,
       onFieldSubmitted: (value) {
@@ -893,7 +894,7 @@ class _NewLeadState extends State<NewLead> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Reason for Enrollment'),
+          child: Text(AppTranslations.of(context).text("reasonForEnrollment")),
         ),
         Expanded(
           flex: 2,
@@ -925,9 +926,9 @@ class _NewLeadState extends State<NewLead> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Service Provider'),
+        Text(AppTranslations.of(context).text("serviceProvider")),
         DropdownButton<ServiceProvider>(
-          hint: Text('Service Provider'),
+          hint: Text(AppTranslations.of(context).text("serviceProvider")),
           value: _serviceProvider,
           items: _serviceProviders.map((serviceProvider) {
             return DropdownMenuItem<ServiceProvider>(
@@ -949,9 +950,9 @@ class _NewLeadState extends State<NewLead> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Telephone Type'),
+        Text(AppTranslations.of(context).text("telephoneType")),
         DropdownButton<TelephoneType>(
-          hint: Text('Telephone Type'),
+          hint: Text(AppTranslations.of(context).text("telephoneType")),
           value: _telephoneType,
           items: _telephoneTypes.map((telephoneType) {
             return DropdownMenuItem<TelephoneType>(
@@ -975,7 +976,7 @@ class _NewLeadState extends State<NewLead> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Salaried Worker?'),
+            Text(AppTranslations.of(context).text("salariedWorker")),
             DropdownButton<String>(
               value: _salariedWorker,
               items: _salary.map((salary) {
@@ -1012,7 +1013,7 @@ class _NewLeadState extends State<NewLead> {
                     child: TextFormField(
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
-                        labelText: 'Payment Day',
+                        labelText: AppTranslations.of(context).text("paymentDay"),
                         hasFloatingPlaceholder: true,
                       ),
                       controller: _paymentDateController,
@@ -1032,7 +1033,7 @@ class _NewLeadState extends State<NewLead> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Other Paid Services'),
+          child: Text(AppTranslations.of(context).text("otherPaidServices")),
         ),
         Expanded(
           flex: 2,
@@ -1066,7 +1067,7 @@ class _NewLeadState extends State<NewLead> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Privacy'),
+          child: Text(AppTranslations.of(context).text("privacy")),
         ),
         Expanded(
           flex: 2,
@@ -1100,7 +1101,7 @@ class _NewLeadState extends State<NewLead> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Type'),
+          child: Text(AppTranslations.of(context).text("type")),
         ),
         Expanded(
           flex: 2,
@@ -1134,7 +1135,7 @@ class _NewLeadState extends State<NewLead> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Security'),
+          child: Text(AppTranslations.of(context).text("security")),
         ),
         Expanded(
           flex: 2,
@@ -1169,9 +1170,9 @@ class _NewLeadState extends State<NewLead> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Padding(padding: EdgeInsets.only(right: 20), child: Text('Status')),
+            Padding(padding: EdgeInsets.only(right: 20), child: Text(AppTranslations.of(context).text("status"))),
             DropdownButton<String>(
-              hint: Text('Status'),
+              hint: Text(AppTranslations.of(context).text("status")),
               value: _status,
               items: _statusList.map((val) {
                 return DropdownMenuItem<String>(
@@ -1220,13 +1221,13 @@ class _NewLeadState extends State<NewLead> {
                     child: TextFormField(
                       textAlign: TextAlign.center,
                       decoration: InputDecoration(
-                        labelText: 'Follow Up Date',
+                        labelText: AppTranslations.of(context).text("followUpDate"),
                         hasFloatingPlaceholder: true,
                       ),
                       controller: _followUpDateController,
                       validator: (value) {
                         if (value.isEmpty)
-                          return 'Follow Up Date is Required';
+                          return AppTranslations.of(context).text("required");
                       },
                     ),
                   ),
@@ -1254,7 +1255,7 @@ class _NewLeadState extends State<NewLead> {
                         child: TextFormField(
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
-                            labelText: 'Site Inspection Date',
+                            labelText: AppTranslations.of(context).text("siteInspectionDate"),
                             hasFloatingPlaceholder: true,
                           ),
                           controller: _siteInspectionDateController,
@@ -1281,13 +1282,13 @@ class _NewLeadState extends State<NewLead> {
                         child: TextFormField(
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
-                            labelText: 'Toilet Installation Date',
+                            labelText: AppTranslations.of(context).text("toiletInstallationDate"),
                             hasFloatingPlaceholder: true,
                           ),
                           controller: _toiletInstallationDateController,
                           validator: (value) {
                             if (value.isEmpty)
-                              return 'Toilet Installation Date is Required';
+                              return AppTranslations.of(context).text("required");
                           },
                         ),
                       ),
@@ -1317,13 +1318,13 @@ class _NewLeadState extends State<NewLead> {
                       child: TextFormField(
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
-                          labelText: 'Estimated Installation Date',
+                          labelText: AppTranslations.of(context).text("estimatedInstallationDate"),
                           hasFloatingPlaceholder: true,
                         ),
                         controller: _toiletInstallationDateController,
                         validator: (value) {
                           if (value.isEmpty)
-                            return 'Estimated Installation Date is Required';
+                            return AppTranslations.of(context).text("required");
                         },
                       ),
                     ),
@@ -1340,7 +1341,7 @@ class _NewLeadState extends State<NewLead> {
   Widget _getComment() {
     return TextFormField(
       decoration:
-          InputDecoration(labelText: 'Comment', hasFloatingPlaceholder: true),
+          InputDecoration(labelText: AppTranslations.of(context).text("comment"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.multiline,
       maxLines: 3,
       controller: _commentController,
@@ -1359,7 +1360,7 @@ class _NewLeadState extends State<NewLead> {
   List<Step> _steps(InitialSetupModel model) {
     List<Step> steps = [
       Step(
-          title: Text('Personal Details'),
+          title: Text(AppTranslations.of(context).text("personalDetails")),
           content: Form(
             key: _personalDetailsFormKey,
             child: Column(
@@ -1391,7 +1392,7 @@ class _NewLeadState extends State<NewLead> {
           ),
           isActive: _currentStep >= 0),
       Step(
-          title: Text('Toilet Information'),
+          title: Text(AppTranslations.of(context).text("toiletInformation")),
           content: Form(
             key: _toiletInformationFormKey,
             child: Column(
@@ -1413,7 +1414,7 @@ class _NewLeadState extends State<NewLead> {
           ),
           isActive: _currentStep >= 1),
       Step(
-          title: Text('Contact Information'),
+          title: Text(AppTranslations.of(context).text("contactDetails")),
           content: Form(
             key: _contactInformationFormKey,
             child: Column(
@@ -1429,7 +1430,7 @@ class _NewLeadState extends State<NewLead> {
           ),
           isActive: _currentStep >= 2),
       Step(
-          title: Text('Additional Information'),
+          title: Text(AppTranslations.of(context).text("additionalInformation")),
           content: Form(
             key: _additionalInformationFormKey,
             child: Column(
@@ -1446,7 +1447,7 @@ class _NewLeadState extends State<NewLead> {
                 Divider(),
                 Column(
                   children: <Widget>[
-                    Text('Current Access To Toilet'),
+                    Text(AppTranslations.of(context).text("currentAccessToToilet")),
                     Divider(),
                     _getPrivacy(model),
                     Divider(),
@@ -1462,7 +1463,7 @@ class _NewLeadState extends State<NewLead> {
           ),
           isActive: _currentStep >= 3),
       Step(
-          title: Text('Status'),
+          title: Text(AppTranslations.of(context).text("status")),
           content: Form(
             key: _statusFormKey,
             child: Column(
@@ -1571,7 +1572,7 @@ class _NewLeadState extends State<NewLead> {
           model: InitialSetupModel(),
           child: Scaffold(
             appBar: AppBar(
-              title: Text('New Lead'),
+              title: Text(AppTranslations.of(context).text("newLead")),
             ),
             body: ModalProgressHUD(
               inAsyncCall: _isLoading,
@@ -1593,9 +1594,9 @@ class _NewLeadState extends State<NewLead> {
                         steps: _steps(initialSetupModel),
                         currentStep: this._currentStep,
                         onStepTapped: (step) {
-                          // setState(() {
-                          //   this._currentStep = step;
-                          // });
+                          setState(() {
+                            this._currentStep = step;
+                          });
                         },
                         onStepContinue: () {
                           FocusScope.of(context).requestFocus(new FocusNode());
@@ -1604,7 +1605,7 @@ class _NewLeadState extends State<NewLead> {
 
                             if(_territory == null) {
                               setState(() {
-                                _territoryError = 'Select Territory';
+                                _territoryError = AppTranslations.of(context).text("required");
                               });
                               _validatePD = false;
                             } else {
@@ -1615,7 +1616,7 @@ class _NewLeadState extends State<NewLead> {
 
                             if(_subTerritory == null) {
                               setState(() {
-                                _subTerritoryError = 'Select Sub-Territory';
+                                _subTerritoryError = AppTranslations.of(context).text("required");
                               });
                               _validatePD = false;
                             } else {
@@ -1648,7 +1649,7 @@ class _NewLeadState extends State<NewLead> {
 
                             if(_toiletType == null) {
                               setState(() {
-                                _toiletTypeError = 'Select Toilet Type';
+                                _toiletTypeError = AppTranslations.of(context).text("required");
                               });
                               _validateTI = false;
                             } else {

@@ -7,8 +7,9 @@ class ToiletInstallationModel {
   String _serialNumber;
   String _items;
   String _toiletImage;
+  int _workOrderId;
 
-  ToiletInstallationModel(this._leadId, this._userId, this._toiletInstallationDate, this._qrCode, this._serialNumber, this._items, this._toiletImage);
+  ToiletInstallationModel(this._leadId, this._userId, this._toiletInstallationDate, this._qrCode, this._serialNumber, this._items, this._toiletImage, this._workOrderId);
 
   void setId(int id) {
     this._id = id;
@@ -22,6 +23,7 @@ class ToiletInstallationModel {
   String get serialNumber => _serialNumber;
   String get items => _items;
   String get toiletImage => _toiletImage;
+  int get workOrderId => _workOrderId;
 
   ToiletInstallationModel.fromMap(Map<String, dynamic> map) {
     this._id = map['id'];
@@ -32,6 +34,7 @@ class ToiletInstallationModel {
     this._serialNumber = map['serialno'];
     this._items = map['items'];
     this._toiletImage = map['toiletimage'];
+    this._workOrderId = map['workOrderId'];
   }
 
   ToiletInstallationModel.map(dynamic object) {
@@ -43,6 +46,7 @@ class ToiletInstallationModel {
     this._serialNumber = object['serialno'];
     this._items = object['items'];
     this._toiletImage = object['toiletimage'];
+    this._workOrderId = object['workOrderId'];
   }
 
   Map<String, dynamic> toMap() {
@@ -58,6 +62,7 @@ class ToiletInstallationModel {
     map['serialno'] = _serialNumber;
     map['items'] = _items;
     map['toiletimage'] = _toiletImage;
+    map['workOrderId'] = _workOrderId;
 
     return map;
   }
@@ -75,6 +80,7 @@ class ToiletInstallationModel {
     map['serialno'] = _serialNumber;
     map['items'] = _items;
     map['toiletimage'] = _toiletImage;
+    map['workOrderId'] = _workOrderId;
     map['device'] = 'mobile';
 
     return map;

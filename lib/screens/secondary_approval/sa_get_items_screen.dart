@@ -21,8 +21,9 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 class GetSAWorkOrderItems extends StatefulWidget {
   final List<Map> itemList;
   final int leadId;
+  final int workOrderId;
 
-  const GetSAWorkOrderItems({Key key, this.itemList, this.leadId}) : super(key: key);
+  const GetSAWorkOrderItems({Key key, this.itemList, this.leadId, this.workOrderId}) : super(key: key);
 
   @override
   _GetSAWorkOrderItemsState createState() => _GetSAWorkOrderItemsState();
@@ -246,18 +247,10 @@ class _GetSAWorkOrderItemsState extends State<GetSAWorkOrderItems> {
           _qrcode, 
           _serialNumber,
           '1,2,3,4,', // _itemsSelected.join(',').toString(), 
-          base64Encode(_image.readAsBytesSync())
+          base64Encode(_image.readAsBytesSync()),
+          widget.workOrderId
         );
-
-        Map<String, dynamic> map = {
-          'leadid': widget.leadId,
-          'userid': _userId,
-          'date': DateTime.now().toString(),
-          'qrcode': _qrcode,
-          'serialno': _serialNumber,
-          'items': '1,2,3,4,', // _itemsSelected.join(',').toString(),
-          'toiletimage': new UploadFileInfo(_image, 'toilet image'),
-        };
+        
         var response = await ToiletInstallationService.saveToiletInstallation(toiletInstallation);
         var decodedResponse = jsonDecode(response.body);
 

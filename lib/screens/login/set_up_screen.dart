@@ -1,3 +1,5 @@
+import 'package:cbsa_mobile_app/app_translations.dart';
+import 'package:cbsa_mobile_app/application.dart';
 import 'package:cbsa_mobile_app/models/setup.dart';
 import 'package:cbsa_mobile_app/scoped_model/task_model.dart';
 import 'package:cbsa_mobile_app/screens/login/login_screen.dart';
@@ -11,11 +13,18 @@ class SetUp extends StatefulWidget {
 
 class _SetUpState extends State<SetUp> {
   String _organizationName;
-  String _language = 'Language A';
-  List<String> _languageList = ['Language A', 'Language B', 'Language C', 'Language D'];
+  String _language;
   String _firstName;
   String _lastName;
   String _subDomain;
+
+  static final List<String> languagesList = application.supportedLanguages;
+  static final List<String> languageCodesList = application.supportedLanguagesCodes;
+
+  final Map<dynamic, dynamic> languagesMap = {
+    languagesList[0]: languageCodesList[0],
+    languagesList[1]: languageCodesList[1],
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +49,7 @@ class _SetUpState extends State<SetUp> {
                     ),
                     TextField(
                       decoration: InputDecoration(
-                        labelText: 'First Name', hasFloatingPlaceholder: true),
+                        labelText: AppTranslations.of(context).text("firstName"), hasFloatingPlaceholder: true),
                       onChanged: (value) {
                         setState(() {
                           this._firstName = value;
@@ -50,7 +59,7 @@ class _SetUpState extends State<SetUp> {
                     Divider(),
                     TextField(
                       decoration: InputDecoration(
-                        labelText: 'Last Name', hasFloatingPlaceholder: true),
+                        labelText: AppTranslations.of(context).text("lastName"), hasFloatingPlaceholder: true),
                       onChanged: (value) {
                         setState(() {
                           this._lastName = value;
@@ -60,7 +69,7 @@ class _SetUpState extends State<SetUp> {
                     Divider(),
                     TextField(
                       decoration: InputDecoration(
-                        labelText: 'Organization Name', hasFloatingPlaceholder: true),
+                        labelText: AppTranslations.of(context).text("organizationName"), hasFloatingPlaceholder: true),
                       onChanged: (value) {
                         setState(() {
                           this._organizationName = value;
@@ -71,10 +80,11 @@ class _SetUpState extends State<SetUp> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text('Select Language'),
+                        Text(AppTranslations.of(context).text("selectLanguage")),
                         DropdownButton<String>(
+                          hint: Text(AppTranslations.of(context).text("language")),
                           value: _language,
-                          items: _languageList.map((language) {
+                          items: languagesList.map((language) {
                             return DropdownMenuItem<String>(
                               value: language,
                               child: Text(language),
@@ -82,8 +92,10 @@ class _SetUpState extends State<SetUp> {
                           }).toList(),
                           onChanged: (value) {
                             setState(() {
+                              print(value);
                               this._language = value;
                             });
+                            application.onLocaleChanged(Locale(languagesMap[value]));
                           },
                         )
                       ],
@@ -91,7 +103,7 @@ class _SetUpState extends State<SetUp> {
                     Divider(),
                     TextField(
                       decoration: InputDecoration(
-                        labelText: 'Sub-Domain Name', hasFloatingPlaceholder: true),
+                        labelText: AppTranslations.of(context).text("subDomainName"), hasFloatingPlaceholder: true),
                       onChanged: (value) {
                         setState(() {
                           this._subDomain = value;
@@ -100,7 +112,7 @@ class _SetUpState extends State<SetUp> {
                     ),
                     Divider(),
                     RaisedButton(
-                      child: Text('Submit'),
+                      child: Text(AppTranslations.of(context).text("submit")),
                       onPressed: () async {
                         Setups setup = Setups(_firstName, _lastName, _organizationName, _language, _subDomain);
                         await model.addSetup(setup);

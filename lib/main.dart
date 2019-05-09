@@ -1,3 +1,5 @@
+import 'package:cbsa_mobile_app/app_translations_delegate.dart';
+import 'package:cbsa_mobile_app/application.dart';
 import 'package:cbsa_mobile_app/screens/archive/archive_screen.dart';
 import 'package:cbsa_mobile_app/screens/complaint_management/complaints_screen.dart';
 import 'package:cbsa_mobile_app/screens/customers/customers_screen.dart';
@@ -24,6 +26,7 @@ import 'package:cbsa_mobile_app/screens/work_orders/work_orders_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -36,6 +39,7 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  AppTranslationsDelegate _newLocaleDelegate;
   SharedPreferences prefs;
   FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
@@ -71,6 +75,10 @@ class _AppState extends State<App> {
     _firebaseMessaging.getToken().then((token) {
       prefs.setString('firebase_token', token);
     });
+
+    _newLocaleDelegate = AppTranslationsDelegate(newLocale: null);
+    application.onLocaleChanged = onLocaleChange;
+
   }
 
   initSharedPreferences() async {
@@ -141,6 +149,22 @@ class _AppState extends State<App> {
         '/customers': (context) => Customers(),
         '/payments': (context) => Payments(),
       },
+      localizationsDelegates: [
+        _newLocaleDelegate,
+        const AppTranslationsDelegate(),
+        //provides localised strings
+        GlobalMaterialLocalizations.delegate,
+        //provides RTL support
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: application.supportedLocales(),
     );
+    
+  }
+
+  void onLocaleChange(Locale locale) {
+    setState(() {
+      _newLocaleDelegate = AppTranslationsDelegate(newLocale: locale);
+    });
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cbsa_mobile_app/app_translations.dart';
 import 'package:cbsa_mobile_app/models/login.dart' as login;
 import 'package:cbsa_mobile_app/models/setup.dart';
 import 'package:cbsa_mobile_app/models/toilet_installation.dart';
@@ -48,13 +49,13 @@ class _LoginState extends State<Login> {
           suffixIcon: Icon(
             Icons.email,
           ),
-          labelText: 'Email',
+          labelText: AppTranslations.of(context).text("email"),
           hasFloatingPlaceholder: true,
           contentPadding: EdgeInsets.all(15.0),
         ),
         validator: (value) {
           if (value.isEmpty) {
-            return 'Please enter your email';
+            return AppTranslations.of(context).text("required");
           }
         },
         onSaved: (value) {
@@ -77,13 +78,13 @@ class _LoginState extends State<Login> {
               });
             },
           ),
-          labelText: 'Password',
+          labelText: AppTranslations.of(context).text("password"),
           hasFloatingPlaceholder: true,
           contentPadding: EdgeInsets.all(15),
         ),
         validator: (value) {
           if (value.isEmpty) {
-            return 'Please enter your password';
+            return AppTranslations.of(context).text("required");
           }
         },
         onSaved: (value) {
@@ -96,7 +97,7 @@ class _LoginState extends State<Login> {
 
   Widget _forgotPassword() {
     return GestureDetector(
-      child: Text('Forgot Password?'),
+      child: Text(AppTranslations.of(context).text("forgotPassword")),
       onTap: () {
         Navigator.pushNamed(context, '/forgotpassword');
       },
@@ -139,12 +140,16 @@ class _LoginState extends State<Login> {
         if (_formKey.currentState.validate()) {
           _formKey.currentState.save();
           try{
-            var user = login.LoginModel(email: this._email, password: this._password,device_token: prefs.getString('firebase_token'));
+            var user = login.LoginModel(email: this._email, password: this._password,device_token: 'qwertyuiop'); //prefs.getString('firebase_token'));
+            print('Request' + user.toMap().toString());
             Response response = await UserService.login(user);
             var decodedJson = jsonDecode(response.body);
             var status = decodedJson['status'];
+            
+            // print(decodedJson);
 
             if(status == 200) {
+              
               UserObject userObject = UserObject.map(decodedJson['user']);
               prefs.setInt('id', userObject.userId);
               int userResult = await model.saveUserObject(userObject);
@@ -196,7 +201,7 @@ class _LoginState extends State<Login> {
                   isloading = false;
                 });
                 prefs.setBool('isloggedin', true);
-                Navigator.pushNamed(context, '/home');
+                Navigator.pushReplacementNamed(context, '/home');
               }
             } else {
               setState(() {
@@ -219,7 +224,7 @@ class _LoginState extends State<Login> {
     return Padding(
       child: GestureDetector(
         child: Text(
-          'FAQs',
+          AppTranslations.of(context).text("faqs"),
           style: TextStyle(color: Colors.black),
         ),
         onTap: () {
@@ -234,7 +239,7 @@ class _LoginState extends State<Login> {
     return Padding(
       child: GestureDetector(
         child: Text(
-          'Terms of Use',
+          AppTranslations.of(context).text("termsOfUse"),
           style: TextStyle(color: Colors.black),
         ),
         onTap: () {

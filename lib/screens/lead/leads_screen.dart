@@ -1,4 +1,5 @@
 import 'package:cbsa_mobile_app/Utils/database_helper.dart';
+import 'package:cbsa_mobile_app/app_translations.dart';
 import 'package:cbsa_mobile_app/models/lead.dart';
 import 'package:cbsa_mobile_app/scoped_model/lead_model.dart';
 import 'package:cbsa_mobile_app/screens/lead/view_lead_screen.dart';
@@ -126,7 +127,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
                             Hero(
-                              tag: initials,
+                              tag: model.readyLeads[index]['id'],
                               child: CircleAvatar(
                                 backgroundColor: Theme.of(context).primaryColor,
                                 child: Text(initials, style: TextStyle(color: Colors.white,fontSize: 25.0),),
@@ -192,15 +193,15 @@ class _LeadsScreenState extends State<LeadsScreen> {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            title: Text('Leads'),
+            title: Text(AppTranslations.of(context).text("leads")),
             bottom: TabBar(
               tabs: <Widget>[
                 Tab(
-                  text: 'Follow Ups',
+                  text: AppTranslations.of(context).text("followUps"),
                   icon: Icon(Icons.insert_drive_file),
                 ),
                 Tab(
-                  text: 'Orders',
+                  text: AppTranslations.of(context).text("orders"),
                   icon: Icon(Icons.shopping_basket),
                 )
               ],
