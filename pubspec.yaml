@@ -15,8 +15,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_localizations:
-    sdk: flutter
   splashscreen: ^1.2.0
   card_settings: ^1.4.1
   http: ^0.12.0+1
@@ -42,14 +40,11 @@ dependencies:
   localstorage: ^1.2.0
   firebase_core:
   firebase_messaging:
-<<<<<<< HEAD
   flutter_sweet_alert:
   flushbar:
-=======
   cached_network_image:
   flutter_localizations:
     sdk: flutter
->>>>>>> 373064b6d204bd161cae0a92f6f5efa915c0d695
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
