@@ -235,7 +235,7 @@ class DatabaseHelper {
     );
     // TOILET INSTALLATIONS
     await db.execute(
-      'CREATE TABLE toiletInstallation(id INTEGER PRIMARY KEY, leadid INTEGER, userid INTEGER, date TEXT, qrcode TEXT, serialno TEXT, items TEXT, toiletimage TEXT)'
+      'CREATE TABLE toiletInstallation(id INTEGER PRIMARY KEY, leadid INTEGER, userid INTEGER, date TEXT, qrcode TEXT, serialno TEXT, items TEXT, toiletimage TEXT, workOrderId INTEGER)'
     );
     // PAYMENTS
     await db.execute(

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:cbsa_mobile_app/Utils/database_helper.dart';
+import 'package:cbsa_mobile_app/app_translations.dart';
 import 'package:cbsa_mobile_app/models/complaintModel.dart';
 import 'package:cbsa_mobile_app/models/complaintTypeModel.dart';
 import 'package:cbsa_mobile_app/models/interruptionTypeModel.dart';
@@ -11,6 +12,7 @@ import 'package:cbsa_mobile_app/models/user.dart';
 import 'package:cbsa_mobile_app/models/work_order.dart';
 import 'package:cbsa_mobile_app/scoped_model/initial_setup_model.dart';
 import 'package:cbsa_mobile_app/scoped_model/task_model.dart';
+import 'package:cbsa_mobile_app/screens/settings/settings.dart';
 import 'package:cbsa_mobile_app/services/home_service.dart';
 import 'package:cbsa_mobile_app/services/work_order_service.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/user.dart';
@@ -457,8 +459,9 @@ class _HomeState extends State<Home> {
                                     ),
                                     title: Text('Settings'),
                                     onTap: () {
-                                      Navigator.of(context).pushNamed('/');
-                                      Navigator.of(context).pop();
+                                      Navigator.push(context, MaterialPageRoute(
+                                        builder: (context) => Settings()
+                                      ));
                                     },
                                   ),
                                 ],

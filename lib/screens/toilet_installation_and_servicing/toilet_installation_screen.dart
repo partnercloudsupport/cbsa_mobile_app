@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cbsa_mobile_app/Utils/database_helper.dart';
+import 'package:cbsa_mobile_app/app_translations.dart';
 import 'package:cbsa_mobile_app/models/customer.dart';
 import 'package:cbsa_mobile_app/models/lead.dart';
 import 'package:cbsa_mobile_app/models/toilet_installation.dart';
 import 'package:cbsa_mobile_app/services/toilet_installation_service.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/user.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
@@ -20,8 +20,9 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 class ToiletInstallation extends StatefulWidget {
   final List<Map> itemList;
   final int leadId;
+  final int workOrderId;
 
-  const ToiletInstallation({Key key, this.itemList, this.leadId}) : super(key: key);
+  const ToiletInstallation({Key key, this.itemList, this.leadId, this.workOrderId}) : super(key: key);
 
   @override
   _ToiletInstallationState createState() => _ToiletInstallationState();
@@ -36,7 +37,7 @@ class _ToiletInstallationState extends State<ToiletInstallation> {
   String _qrcode = '';
   String _serialNumber;
   File _image;
-  TextEditingController _commentController = TextEditingController();
+  // TextEditingController _commentController = TextEditingController();
   TextEditingController _serialNumController = TextEditingController();
   // String _comments;
   bool _isLoading = false;
@@ -93,7 +94,7 @@ class _ToiletInstallationState extends State<ToiletInstallation> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Scan QR Code: '),
+            Text(AppTranslations.of(context).text("scanQRCode")),
             RaisedButton(
               child: Text('Scan'),
               onPressed: scan,
@@ -133,7 +134,7 @@ class _ToiletInstallationState extends State<ToiletInstallation> {
 
   Widget _getSerialNumber() {
     return TextFormField(
-      decoration: InputDecoration(labelText: 'Serial Number', hasFloatingPlaceholder: true),
+      decoration: InputDecoration(labelText: AppTranslations.of(context).text("serialNumber"), hasFloatingPlaceholder: true),
       controller: _serialNumController,
       onFieldSubmitted: (value) {
         setState(() {
@@ -142,7 +143,7 @@ class _ToiletInstallationState extends State<ToiletInstallation> {
       },
       validator: (value) {
         if(value.isEmpty) {
-          return 'Serial Number Is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onSaved: (value) {
@@ -161,7 +162,7 @@ class _ToiletInstallationState extends State<ToiletInstallation> {
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.only(bottom: 10),
-                child: Text('Customer Image'),
+                child: Text(AppTranslations.of(context).text("toiletImage")),
               ),
               RaisedButton(
                 child: Row(children: <Widget>[Text('Take Photo  '), Icon(Icons.camera_alt)],),
@@ -187,7 +188,7 @@ class _ToiletInstallationState extends State<ToiletInstallation> {
             height: 150,
             width: 120,
             child: _image == null ?
-              Center(child: Text('No Image Selected'),) :
+              Center(child: Text(AppTranslations.of(context).text("noImageSelected")),) :
               Image.file(_image),
           )
         ],
@@ -202,7 +203,7 @@ class _ToiletInstallationState extends State<ToiletInstallation> {
           _toiletInstallationFormKey.currentState.save();
 
           setState(() {
-            _isLoading = true;
+            // _isLoading = true;
           });
           Fluttertoast.showToast(
             msg: 'Submitting...',
@@ -216,8 +217,10 @@ class _ToiletInstallationState extends State<ToiletInstallation> {
             _qrcode, 
             _serialNumber,
             _itemsSelected.join(',').toString(), 
-            base64Encode(_image.readAsBytesSync())
+            base64Encode(_image.readAsBytesSync()),
+            widget.workOrderId
           );
+          // print(toiletInstallation.workOrderId);
           var response = await ToiletInstallationService.saveToiletInstallation(toiletInstallation);
           var decodedResponse = jsonDecode(response.body);
 

@@ -218,7 +218,7 @@ class _SAWorkOrderViewState extends State<SAWorkOrderView> {
             child: Text('Install Toilet >', style: TextStyle(color: Colors.blue, fontSize: 18),),
             onTap: () async {
               List itemList = await getItemList();
-              Navigator.push(context, MaterialPageRoute(builder: (context) => GetSAWorkOrderItems(itemList: itemList, leadId: widget.workOrder.id,)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => GetSAWorkOrderItems(itemList: itemList, leadId: widget.workOrder.id, workOrderId: widget.workOrder.workOrderId)));
             },
           ),
         ),

@@ -2,30 +2,18 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cbsa_mobile_app/Utils/database_helper.dart';
+import 'package:cbsa_mobile_app/app_translations.dart';
 import 'package:cbsa_mobile_app/models/lead.dart';
 import 'package:cbsa_mobile_app/models/lead_conversion.dart';
 import 'package:cbsa_mobile_app/scoped_model/initial_setup_model.dart';
 import 'package:cbsa_mobile_app/scoped_model/lead_model.dart';
-import 'package:cbsa_mobile_app/services/base_service.dart';
 import 'package:cbsa_mobile_app/services/lead_conversion_service.dart';
-import 'package:cbsa_mobile_app/services/lead_service.dart';
-import 'package:cbsa_mobile_app/setup_models.dart/block.dart';
-import 'package:cbsa_mobile_app/setup_models.dart/lead_type.dart';
-import 'package:cbsa_mobile_app/setup_models.dart/service_provider.dart';
-import 'package:cbsa_mobile_app/setup_models.dart/sub_territory.dart';
-import 'package:cbsa_mobile_app/setup_models.dart/telephone_type.dart';
-import 'package:cbsa_mobile_app/setup_models.dart/territory.dart';
-import 'package:cbsa_mobile_app/setup_models.dart/toilet_type.dart';
-import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
-import 'package:location/location.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:http/http.dart' as http;
 
 class NewLeadConversion extends StatefulWidget {
   final Lead lead;
@@ -38,28 +26,12 @@ class NewLeadConversion extends StatefulWidget {
 class _NewLeadConversionState extends State<NewLeadConversion> {
   int _currentStep = 0;
   final _additionalInformationFormKey = GlobalKey<FormState>();
-  final _statusFormKey = GlobalKey<FormState>();
   final _locationInformationFormKey = GlobalKey<FormState>();
   final _paymentInformationFormKey = GlobalKey<FormState>();
   final _documentFormKey = GlobalKey<FormState>();
 
   // Time
-  String _startTime;
   String _endTime;
-
-  // Location
-  var location = new Location();
-  LocationData currentLocation;
-  double _latitude;
-  double _longitude;
-
-  // Contact Information
-  String _address;
-  TextEditingController _addressController = TextEditingController();
-  String _primaryPhoneNumber;
-  TextEditingController _primaryNumberController = TextEditingController();
-  String _secondaryPhoneNumber;
-  TextEditingController _secondaryNumbercontroller = TextEditingController();
 
   // Additional Information
   Map<String, bool> _householdSavings = {
@@ -95,17 +67,6 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
   List<String> _homeOwnerships = ['Own', 'Rent'];
   String _homeOwnership = 'Own';
 
-  // Status
-  // List<String> _statusList = ['Open', 'Ready'];
-  String _status = 'Ready';
-  TextEditingController _siteInspectionDateController = TextEditingController();
-  String _sIDate;
-  TextEditingController _toiletInstallationDateController =
-      TextEditingController();
-  String _tIDate;
-  TextEditingController _commentController = TextEditingController();
-  String _comment;
-
   // Location Information
   File _customerImage;
   File _houseHoldImage;
@@ -139,38 +100,6 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
   List<String> _documentPath = [];
 
   bool _isLoading = false;
-  Map _user;
-
-  void initState() {
-    super.initState();
-
-    fetchUserObject();
-
-    setState(() {
-      _startTime = DateTime.now().toString();
-    });
-  }
-
-  void fetchUserObject() async {
-    var dbClient = DatabaseHelper();
-    Map user = await dbClient.getUserObject();
-    setState(() {
-      this._user = user;
-    });
-  }
-
-  _getLocation() async {
-    try {
-      currentLocation = await location.getLocation();
-    } catch (e) {
-      currentLocation = null;
-    }
-    print(currentLocation);
-    setState(() {
-      _latitude = currentLocation.latitude;
-      _longitude = currentLocation.longitude;
-    });
-  }
 
   Widget _getHouseholdSavings() {
     return Row(
@@ -178,7 +107,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Household Savings'),
+          child: Text(AppTranslations.of(context).text("householdSavings")),
         ),
         Expanded(
           flex: 2,
@@ -213,7 +142,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
           children: <Widget>[
             Expanded(
               flex: 2,
-              child: Text('Primary Occupation'),
+              child: Text(AppTranslations.of(context).text("primaryOccupation")),
             ),
             Expanded(
               flex: 2,
@@ -241,7 +170,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
         this._primaryOccupation == 'Other'
             ? TextFormField(
                 decoration: InputDecoration(
-                    labelText: 'Primary Occupation',
+                    labelText: AppTranslations.of(context).text("primaryOccupation"),
                     hasFloatingPlaceholder: true),
                 controller: _primaryOccupationController,
                 onFieldSubmitted: (value) {
@@ -249,7 +178,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
                 },
                 validator: (value) {
                   if (value.isEmpty) {
-                    return 'Primary Occupation is Required';
+                    return AppTranslations.of(context).text("required");
                   }
                 },
                 onSaved: (value) {
@@ -271,7 +200,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
           children: <Widget>[
             Expanded(
               flex: 2,
-              child: Text('Secondary Occupation'),
+              child: Text(AppTranslations.of(context).text("secondaryOccupation")),
             ),
             Expanded(
               flex: 2,
@@ -299,7 +228,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
         this._secondaryOccupation == 'Other'
         ? TextFormField(
             decoration: InputDecoration(
-              labelText: 'Secondary Occupation',
+              labelText: AppTranslations.of(context).text("secondaryOccupation"),
               hasFloatingPlaceholder: true),
             controller: _secondaryOccupationController,
             onFieldSubmitted: (value) {
@@ -307,7 +236,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
             },
             validator: (value) {
               if (value.isEmpty) {
-                return 'Secondary Occupation is Required';
+                return AppTranslations.of(context).text("required");
               }
             },
             onSaved: (value) {
@@ -327,7 +256,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
       children: <Widget>[
         Expanded(
           flex: 2,
-          child: Text('Home Ownership'),
+          child: Text(AppTranslations.of(context).text("homeOwnership")),
         ),
         Expanded(
           flex: 2,
@@ -362,7 +291,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.only(bottom: 10),
-              child: Text('Customer Image'),
+              child: Text(AppTranslations.of(context).text("customerImage")),
             ),
             RaisedButton(
               child: Row(
@@ -413,7 +342,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.only(bottom: 10),
-              child: Text('Household Image'),
+              child: Text(AppTranslations.of(context).text("householdImage")),
             ),
             RaisedButton(
               child: Row(
@@ -463,7 +392,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.only(bottom: 10),
-              child: Text('Landmark Image'),
+              child: Text(AppTranslations.of(context).text("landmarkImage")),
             ),
             RaisedButton(
               child: Row(
@@ -510,7 +439,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
     return (TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Mobile Money Code', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("mobileMoneyCode"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _mobileMoneyCodeController,
       onFieldSubmitted: (value) {
@@ -530,7 +459,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Is Customer Same As Payer?'),
+            Text(AppTranslations.of(context).text("customerSameAsPayer")),
             DropdownButton<String>(
               value: _payer,
               items: _isPayer.map((payer) {
@@ -552,7 +481,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
                 children: <Widget>[
                   TextFormField(
                     decoration: InputDecoration(
-                        labelText: 'Payer First Name',
+                        labelText: AppTranslations.of(context).text("payerFirstName"),
                         hasFloatingPlaceholder: true),
                     controller: _payerFirstNameController,
                     onFieldSubmitted: (value) {
@@ -560,7 +489,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
                     },
                     validator: (value) {
                       if (value.isEmpty) {
-                        return 'Payer First Name is Required';
+                        return AppTranslations.of(context).text("required");
                       }
                     },
                     onSaved: (value) {
@@ -571,7 +500,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
                   ),
                   TextFormField(
                     decoration: InputDecoration(
-                        labelText: 'Payer Last Name',
+                        labelText: AppTranslations.of(context).text("payerLastName"),
                         hasFloatingPlaceholder: true),
                     controller: _payerLastNameController,
                     onFieldSubmitted: (value) {
@@ -579,7 +508,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
                     },
                     validator: (value) {
                       if (value.isEmpty) {
-                        return 'Payer Last Name is Required';
+                        return AppTranslations.of(context).text("required");
                       }
                     },
                     onSaved: (value) {
@@ -589,9 +518,23 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
                     },
                   ),
                   TextFormField(
+                    decoration: InputDecoration(
+                        labelText: AppTranslations.of(context).text("payerRelationship"),
+                        hasFloatingPlaceholder: true),
+                    controller: _relationshipController,
+                    onFieldSubmitted: (value) {
+                      _relationshipController.text = value;
+                    },
+                    onSaved: (value) {
+                      setState(() {
+                        this._relationship = value;
+                      });
+                    },
+                  ),
+                  TextFormField(
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
-                        labelText: 'Payer Primary Phone Number',
+                        labelText: AppTranslations.of(context).text("payerPrimaryTelephone"),
                         hasFloatingPlaceholder: true),
                     keyboardType: TextInputType.number,
                     controller: _payerPrimaryPhoneNumberController,
@@ -600,7 +543,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
                     },
                     validator: (value) {
                       if (value.isEmpty) {
-                        return 'Payer Primary Telephone is Required';
+                        return AppTranslations.of(context).text("required");
                       }
                     },
                     onSaved: (value) {
@@ -612,7 +555,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
                   TextFormField(
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
-                        labelText: 'Payer Secondary Phone Number',
+                        labelText: AppTranslations.of(context).text("payerSecondaryTelephone"),
                         hasFloatingPlaceholder: true),
                     keyboardType: TextInputType.number,
                     controller: _payerSecondaryPhoneNumberController,
@@ -627,7 +570,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
                   ),
                   TextFormField(
                     decoration: InputDecoration(
-                        labelText: 'Payer Occupation',
+                        labelText: AppTranslations.of(context).text("payerOccupation"),
                         hasFloatingPlaceholder: true),
                     controller: _payerOccupationController,
                     onFieldSubmitted: (value) {
@@ -652,7 +595,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Payment Method'),
+          child: Text(AppTranslations.of(context).text("paymentMethod")),
         ),
         Expanded(
           flex: 2,
@@ -686,7 +629,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
       children: <Widget>[
         _documentPath == null
             ? Text('No Document Selected')
-            : Text(_documentPath.length.toString() + ' Document Added'),
+            : Text(_documentPath.length.toString() + ' ' + AppTranslations.of(context).text("documentAdded")),
         RaisedButton(
           child: Icon(Icons.attachment),
           onPressed: () async {
@@ -711,7 +654,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
   List<Step> _steps(InitialSetupModel model) {
     List<Step> steps = [
       Step(
-          title: Text('Additional Information'),
+          title: Text(AppTranslations.of(context).text("additionalInformation")),
           content: Form(
             key: _additionalInformationFormKey,
             child: Column(
@@ -730,7 +673,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
           ),
           isActive: _currentStep >= 3),
       Step(
-          title: Text('Location Information'),
+          title: Text(AppTranslations.of(context).text("locationInformation")),
           content: Form(
             key: _locationInformationFormKey,
             child: Column(
@@ -746,7 +689,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
           ),
           isActive: _currentStep >= 5),
       Step(
-          title: Text('Payment Information'),
+          title: Text(AppTranslations.of(context).text("paymentInformation")),
           content: Form(
             key: _paymentInformationFormKey,
             child: Column(
@@ -762,7 +705,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
           ),
           isActive: _currentStep >= 6),
       Step(
-          title: Text('Document Upload'),
+          title: Text(AppTranslations.of(context).text("documentUpload")),
           content: Form(
             key: _documentFormKey,
             child: Column(
@@ -825,12 +768,12 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
         }
       } else {
         Fluttertoast.showToast(
-          msg: 'Could Not Convert Lead',
+          msg: AppTranslations.of(context).text("conversionError"),
           toastLength: Toast.LENGTH_SHORT
         );
       }
     } catch (e) {
-      currentLocation = null;
+      print(e);
     }
 
   }
@@ -847,7 +790,7 @@ class _NewLeadConversionState extends State<NewLeadConversion> {
           model: InitialSetupModel(),
           child: Scaffold(
             appBar: AppBar(
-              title: Text('Lead Conversion'),
+              title: Text(AppTranslations.of(context).text("leadConversion")),
             ),
             body: ModalProgressHUD(
               inAsyncCall: _isLoading,

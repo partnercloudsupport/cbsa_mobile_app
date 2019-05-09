@@ -1,7 +1,7 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:cbsa_mobile_app/Utils/database_helper.dart';
+import 'package:cbsa_mobile_app/app_translations.dart';
 import 'package:cbsa_mobile_app/models/lead.dart';
 import 'package:cbsa_mobile_app/scoped_model/initial_setup_model.dart';
 import 'package:cbsa_mobile_app/scoped_model/lead_model.dart';
@@ -20,7 +20,6 @@ import 'package:location/location.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' show Response;
-import 'package:flutter_sweet_alert/flutter_sweet_alert.dart';
 
 class NewLead extends StatefulWidget {
   @override
@@ -105,7 +104,7 @@ class _NewLeadState extends State<NewLead> {
   // Additional Information
   Map<String, bool> _enrollmentReason = {};
   List<int> _reasonsSelected = [];
-
+  
   ServiceProvider _serviceProvider;
   List<ServiceProvider> _serviceProviders = [];
   TelephoneType _telephoneType;
@@ -131,8 +130,7 @@ class _NewLeadState extends State<NewLead> {
   String _fUDate;
   TextEditingController _siteInspectionDateController = TextEditingController();
   String _sIDate;
-  TextEditingController _toiletInstallationDateController =
-      TextEditingController();
+  TextEditingController _toiletInstallationDateController = TextEditingController();
   String _tIDate;
   TextEditingController _commentController = TextEditingController();
   String _comment;
@@ -142,8 +140,11 @@ class _NewLeadState extends State<NewLead> {
 
   void initState() {
     super.initState();
+
     _getLocation();
+
     fetchUserObject();
+
     fetchTerritories();
     fetchSubTerritories();
     fetchBlocks();
@@ -151,12 +152,14 @@ class _NewLeadState extends State<NewLead> {
     fetchToiletTypes();
     fetchTelephoneTypes();
     fetchServiceProviders();
+
     fetchAllInformationSources();
     fetchAllEnrollmentReasons();
     fetchAllPaidServices();
     fetchAllToiletPrivacy();
     fetchAllToiletTypeCA();
     fetchAllToiletSecurity();
+
     setState(() {
       _startTime = DateTime.now().toString();
     });
@@ -166,20 +169,12 @@ class _NewLeadState extends State<NewLead> {
     var dbClient = DatabaseHelper();
     Map user = await dbClient.getUserObject();
     setState(() {
-      this._user = user;
+     this._user = user; 
     });
   }
 
-  showAlert() {
-    return Container(
-      alignment: Alignment.center,
-      height: MediaQuery.of(context).size.height * 0.4,
-      width: MediaQuery.of(context).size.width * 0.5,
-      child: Text('data'),
-    );
-  }
-
   // DROPDOWNS
+
   void fetchTerritories() async {
     var dbClient = DatabaseHelper();
     List list = await dbClient.getAllTerritories();
@@ -188,7 +183,7 @@ class _NewLeadState extends State<NewLead> {
     }).toList();
 
     setState(() {
-      this._territoryList = territories;
+     this._territoryList = territories;
     });
   }
 
@@ -200,15 +195,15 @@ class _NewLeadState extends State<NewLead> {
     }).toList();
 
     List<SubTerritory> subT = [];
-    for (int i = 0; i < subTerritories.length; i++) {
-      if (subTerritories[i].territoryId == subTerritories[0].territoryId) {
+    for(int i = 0; i < subTerritories.length; i++) {
+      if(subTerritories[i].territoryId == subTerritories[0].territoryId) {
         subT.add(subTerritories[i]);
       }
     }
 
     setState(() {
-      this._allSubTerritories = subTerritories;
-      this._subTerritoryList = subT;
+     this._allSubTerritories = subTerritories;
+     this._subTerritoryList = subT;
     });
   }
 
@@ -220,14 +215,15 @@ class _NewLeadState extends State<NewLead> {
     }).toList();
 
     List<Block> bloc = [];
-    for (int i = 0; i < blocks.length; i++) {
-      if (blocks[i].subTerritoryId == blocks[0].subTerritoryId) {
+    for(int i = 0; i < blocks.length; i++) {
+      if(blocks[i].subTerritoryId == blocks[0].subTerritoryId) {
         bloc.add(blocks[i]);
       }
     }
+
     setState(() {
-      this._allBlocks = blocks;
-      this._blockList = bloc;
+     this._allBlocks = blocks;
+     this._blockList = bloc;
     });
   }
 
@@ -237,8 +233,9 @@ class _NewLeadState extends State<NewLead> {
     List<LeadType> leadTypes = list.map((leadType) {
       return LeadType.map(leadType);
     }).toList();
+
     setState(() {
-      this._leadTypeList = leadTypes;
+     this._leadTypeList = leadTypes;
     });
   }
 
@@ -248,8 +245,9 @@ class _NewLeadState extends State<NewLead> {
     List<ToiletType> toiletTypes = list.map((toiletType) {
       return ToiletType.map(toiletType);
     }).toList();
+
     setState(() {
-      this._toiletTypeList = toiletTypes;
+     this._toiletTypeList = toiletTypes;
     });
   }
 
@@ -259,8 +257,9 @@ class _NewLeadState extends State<NewLead> {
     List<ServiceProvider> serviceProviders = list.map((serviceProvider) {
       return ServiceProvider.map(serviceProvider);
     }).toList();
+
     setState(() {
-      this._serviceProviders = serviceProviders;
+     this._serviceProviders = serviceProviders;
     });
   }
 
@@ -270,69 +269,65 @@ class _NewLeadState extends State<NewLead> {
     List<TelephoneType> telephoneTypes = list.map((telephoneType) {
       return TelephoneType.map(telephoneType);
     }).toList();
+
     setState(() {
-      this._telephoneTypes = telephoneTypes;
+     this._telephoneTypes = telephoneTypes;
     });
   }
 
   // MULTISELECT CHECKBOXES
+
   void fetchAllInformationSources() async {
     var dbClient = DatabaseHelper();
     List list = await dbClient.getAllInformationSources();
-    Map<String, bool> infoSourceMap = new Map.fromIterable(list,
-        key: (value) => value['name'], value: (value) => false);
+    Map<String, bool> infoSourceMap = new Map.fromIterable(list, key: (value) => value['name'], value: (value) => false);
     setState(() {
-      this._infoSourceList = infoSourceMap;
+      this._infoSourceList = infoSourceMap; 
     });
   }
 
   void fetchAllEnrollmentReasons() async {
     var dbClient = DatabaseHelper();
     List list = await dbClient.getAllEnrollmentReasons();
-    Map<String, bool> enrollmentReasonMap = new Map.fromIterable(list,
-        key: (value) => value['name'], value: (value) => false);
+    Map<String, bool> enrollmentReasonMap = new Map.fromIterable(list, key: (value) => value['name'], value: (value) => false);
     setState(() {
-      this._enrollmentReason = enrollmentReasonMap;
+      this._enrollmentReason = enrollmentReasonMap; 
     });
   }
 
   void fetchAllPaidServices() async {
     var dbClient = DatabaseHelper();
     List list = await dbClient.getAllPaidServices();
-    Map<String, bool> paidServicesMap = new Map.fromIterable(list,
-        key: (value) => value['name'], value: (value) => false);
+    Map<String, bool> paidServicesMap = new Map.fromIterable(list, key: (value) => value['name'], value: (value) => false);
     setState(() {
-      this._paidServices = paidServicesMap;
+      this._paidServices = paidServicesMap; 
     });
   }
 
   void fetchAllToiletPrivacy() async {
     var dbClient = DatabaseHelper();
     List list = await dbClient.getAllToiletPrivacy();
-    Map<String, bool> toiletPrivacyMap = new Map.fromIterable(list,
-        key: (value) => value['name'], value: (value) => false);
+    Map<String, bool> toiletPrivacyMap = new Map.fromIterable(list, key: (value) => value['name'], value: (value) => false);
     setState(() {
-      this._privacyList = toiletPrivacyMap;
+      this._privacyList = toiletPrivacyMap; 
     });
   }
 
   void fetchAllToiletTypeCA() async {
     var dbClient = DatabaseHelper();
     List list = await dbClient.getAllToiletTypeCA();
-    Map<String, bool> toiletTypeMap = new Map.fromIterable(list,
-        key: (value) => value['name'], value: (value) => false);
+    Map<String, bool> toiletTypeMap = new Map.fromIterable(list, key: (value) => value['name'], value: (value) => false);
     setState(() {
-      this._typeList = toiletTypeMap;
+      this._typeList = toiletTypeMap; 
     });
   }
 
   void fetchAllToiletSecurity() async {
     var dbClient = DatabaseHelper();
     List list = await dbClient.getAllToiletSecurity();
-    Map<String, bool> toiletSecurityMap = new Map.fromIterable(list,
-        key: (value) => value['name'], value: (value) => false);
+    Map<String, bool> toiletSecurityMap = new Map.fromIterable(list, key: (value) => value['name'], value: (value) => false);
     setState(() {
-      this._securityList = toiletSecurityMap;
+      this._securityList = toiletSecurityMap; 
     });
   }
 
@@ -342,26 +337,26 @@ class _NewLeadState extends State<NewLead> {
     } catch (e) {
       currentLocation = null;
     }
-    if (currentLocation != null) {
+    if(currentLocation != null) {
       setState(() {
         _latitude = currentLocation.latitude;
         _longitude = currentLocation.longitude;
       });
     }
+    print({'latitude': _latitude, 'longitude': _longitude});
   }
 
   // Personal Details Widgets
   Widget _getFirstName() {
     return TextFormField(
-      decoration: InputDecoration(
-          labelText: 'First Name', hasFloatingPlaceholder: true),
+      decoration: InputDecoration(labelText: AppTranslations.of(context).text("firstName"), hasFloatingPlaceholder: true),
       controller: _firstNameController,
       onFieldSubmitted: (value) {
         _firstNameController.text = value;
       },
       validator: (value) {
         if (value.isEmpty) {
-          return 'First Name is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onSaved: (value) {
@@ -375,14 +370,14 @@ class _NewLeadState extends State<NewLead> {
   Widget _getLastName() {
     return TextFormField(
       decoration:
-          InputDecoration(labelText: 'Last Name', hasFloatingPlaceholder: true),
+          InputDecoration(labelText: AppTranslations.of(context).text("lastName"), hasFloatingPlaceholder: true),
       controller: _lastNameController,
       onFieldSubmitted: (value) {
         _lastNameController.text = value;
       },
       validator: (value) {
         if (value.isEmpty) {
-          return 'Last Name is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onSaved: (value) {
@@ -395,17 +390,18 @@ class _NewLeadState extends State<NewLead> {
 
   Widget _getOtherNames() {
     return TextFormField(
-        decoration: InputDecoration(
-            labelText: 'Other Names', hasFloatingPlaceholder: true),
-        controller: _otherNamesController,
-        onFieldSubmitted: (value) {
-          _otherNamesController.text = value;
-        },
-        onSaved: (value) {
-          setState(() {
-            this._otherNames = value;
-          });
+      decoration: InputDecoration(
+          labelText: AppTranslations.of(context).text("otherNames"), hasFloatingPlaceholder: true),
+      controller: _otherNamesController,
+      onFieldSubmitted: (value) {
+        _otherNamesController.text = value;
+      },
+      onSaved: (value) {
+        setState(() {
+          this._otherNames = value;
         });
+      }
+    );
   }
 
   Widget _getTerritory() {
@@ -414,9 +410,9 @@ class _NewLeadState extends State<NewLead> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Territory'),
+            Text(AppTranslations.of(context).text("territory")),
             DropdownButton<Territory>(
-              hint: Text('Territory'),
+              hint: Text(AppTranslations.of(context).text("territory")),
               value: _territory,
               items: _territoryList.map((Territory territory) {
                 return new DropdownMenuItem<Territory>(
@@ -426,18 +422,18 @@ class _NewLeadState extends State<NewLead> {
               }).toList(),
               onChanged: (value) async {
                 List<SubTerritory> subT = [];
-                for (int i = 0; i < this._allSubTerritories.length; i++) {
-                  if (_allSubTerritories[i].territoryId == value.territoryId) {
+                for(int i = 0; i < this._allSubTerritories.length; i++) {
+                  if(_allSubTerritories[i].territoryId == value.territoryId) {
                     subT.add(_allSubTerritories[i]);
                   }
                 }
                 List<Block> bloc = [];
-                for (int i = 0; i < _allBlocks.length; i++) {
-                  if (_allBlocks[i].subTerritoryId == subT[0].subTerritoryId) {
+                for(int i = 0; i < _allBlocks.length; i++) {
+                  if(_allBlocks[i].subTerritoryId == subT[0].subTerritoryId) {
                     bloc.add(_allBlocks[i]);
                   }
                 }
-
+                
                 setState(() {
                   this._territory = value;
                   this._subTerritoryList = subT;
@@ -450,11 +446,11 @@ class _NewLeadState extends State<NewLead> {
           ],
         ),
         _territoryError == null
-            ? SizedBox.shrink()
-            : Text(
-                _territoryError ?? '',
-                style: TextStyle(color: Colors.red[600]),
-              )
+          ? SizedBox.shrink()
+          : Text(
+            _territoryError ?? '', 
+            style: TextStyle(color: Colors.red[600]),
+        )
       ],
     );
   }
@@ -465,46 +461,41 @@ class _NewLeadState extends State<NewLead> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Sub-Territory'),
+            Text(AppTranslations.of(context).text("subTerritory")),
             _subTerritoryList.isNotEmpty
-                ? DropdownButton<SubTerritory>(
-                    hint: Text('Sub-Territory'),
-                    value: _subTerritory,
-                    items:
-                        this._subTerritoryList.map((SubTerritory subTerritory) {
-                      return DropdownMenuItem<SubTerritory>(
-                        value: subTerritory,
-                        child: Text(subTerritory.name),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      List<Block> bloc = [];
-                      for (int i = 0; i < _allBlocks.length; i++) {
-                        if (_allBlocks[i].subTerritoryId ==
-                            value.subTerritoryId) {
-                          bloc.add(_allBlocks[i]);
-                        }
-                      }
+            ? DropdownButton<SubTerritory>(
+              hint: Text(AppTranslations.of(context).text("subTerritory")),
+              value: _subTerritory,
+              items: this._subTerritoryList.map((SubTerritory subTerritory) {
+                return DropdownMenuItem<SubTerritory>(
+                  value: subTerritory,
+                  child: Text(subTerritory.name),
+                );
+              }).toList(),
+              onChanged: (value) {
+                List<Block> bloc = [];
+                for(int i = 0; i < _allBlocks.length; i++) {
+                  if(_allBlocks[i].subTerritoryId == value.subTerritoryId) {
+                    bloc.add(_allBlocks[i]);
+                  }
+                }
 
-                      setState(() {
-                        this._subTerritory = value;
-                        this._blockList = bloc;
-                        this._block = null;
-                      });
-                    },
-                  )
-                : Text(
-                    'None',
-                    style: TextStyle(fontSize: 18),
-                  ),
+                setState(() {
+                  this._subTerritory = value;
+                  this._blockList = bloc;
+                  this._block = null;
+                });
+              },
+            )
+            : Text('None', style: TextStyle(fontSize: 18),),
           ],
         ),
         _subTerritoryError == null
-            ? SizedBox.shrink()
-            : Text(
-                _subTerritoryError ?? '',
-                style: TextStyle(color: Colors.red[600]),
-              )
+          ? SizedBox.shrink()
+          : Text(
+            _subTerritoryError ?? '', 
+            style: TextStyle(color: Colors.red[600]),
+        )
       ],
     );
   }
@@ -513,27 +504,24 @@ class _NewLeadState extends State<NewLead> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Block'),
+        Text(AppTranslations.of(context).text("block")),
         _blockList.isNotEmpty
-            ? DropdownButton<Block>(
-                hint: Text('Block'),
-                value: _block,
-                items: _blockList.map((block) {
-                  return DropdownMenuItem<Block>(
-                    value: block,
-                    child: Text(block.name),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    this._block = value;
-                  });
-                },
-              )
-            : Text(
-                'None',
-                style: TextStyle(fontSize: 18),
-              )
+        ? DropdownButton<Block>(
+          hint: Text(AppTranslations.of(context).text("block")),
+          value: _block,
+          items: _blockList.map((block) {
+            return DropdownMenuItem<Block>(
+              value: block,
+              child: Text(block.name),
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              this._block = value;
+            });
+          },
+        )
+        : Text('None', style: TextStyle(fontSize: 18),)
       ],
     );
   }
@@ -544,9 +532,9 @@ class _NewLeadState extends State<NewLead> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Gender'),
+            Text(AppTranslations.of(context).text("gender")),
             DropdownButton<String>(
-              hint: Text('Gender'),
+              hint: Text(AppTranslations.of(context).text("gender")),
               value: _gender,
               items: _genderList.map((gender) {
                 return DropdownMenuItem<String>(
@@ -563,11 +551,11 @@ class _NewLeadState extends State<NewLead> {
           ],
         ),
         _genderError == null
-            ? SizedBox.shrink()
-            : Text(
-                _genderError ?? '',
-                style: TextStyle(color: Colors.red[600]),
-              )
+          ? SizedBox.shrink()
+          : Text(
+            _genderError ?? '', 
+            style: TextStyle(color: Colors.red[600]),
+        )
       ],
     );
   }
@@ -576,7 +564,7 @@ class _NewLeadState extends State<NewLead> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Disabled?'),
+        Text(AppTranslations.of(context).text("disabled")),
         DropdownButton<String>(
           value: _disability,
           items: _disabilityList.map((disability) {
@@ -599,9 +587,9 @@ class _NewLeadState extends State<NewLead> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Lead Type'),
+        Text(AppTranslations.of(context).text("leadType")),
         DropdownButton<LeadType>(
-          hint: Text('Lead Type'),
+          hint: Text(AppTranslations.of(context).text("leadType")),
           value: _leadType,
           items: _leadTypeList.map((leadType) {
             return DropdownMenuItem<LeadType>(
@@ -625,7 +613,7 @@ class _NewLeadState extends State<NewLead> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Source of Information'),
+          child: Text(AppTranslations.of(context).text("sourceOfInformation")),
         ),
         Expanded(
           flex: 2,
@@ -638,7 +626,7 @@ class _NewLeadState extends State<NewLead> {
                   setState(() {
                     _infoSourceList[key] = value;
                   });
-                  if (value) {
+                  if(value) {
                     int id = await model.getInformationSourceId(key);
                     _infoSourceSelected.add(id);
                   } else {
@@ -660,7 +648,9 @@ class _NewLeadState extends State<NewLead> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Padding(
-                padding: EdgeInsets.only(right: 20), child: Text('Referred?')),
+              padding: EdgeInsets.only(right: 20), 
+              child: Text(AppTranslations.of(context).text("referred"))
+            ),
             DropdownButton<String>(
               value: _referred,
               items: _referredList.map((val) {
@@ -681,7 +671,7 @@ class _NewLeadState extends State<NewLead> {
           child: _referred == 'Yes'
               ? TextFormField(
                   decoration: InputDecoration(
-                      labelText: 'Name of Referee',
+                      labelText: AppTranslations.of(context).text("refereeName"),
                       hasFloatingPlaceholder: true),
                   controller: _referredByController,
                   onFieldSubmitted: (value) {
@@ -689,7 +679,7 @@ class _NewLeadState extends State<NewLead> {
                   },
                   validator: (value) {
                     if (value.isEmpty) {
-                      return 'Name of Referee is Required';
+                      return AppTranslations.of(context).text("required");
                     }
                   },
                   onSaved: (value) {
@@ -711,9 +701,9 @@ class _NewLeadState extends State<NewLead> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Toilet Type'),
+            Text(AppTranslations.of(context).text("toiletType")),
             DropdownButton<ToiletType>(
-              hint: Text('Toilet Type'),
+              hint: Text(AppTranslations.of(context).text("toiletType")),
               value: _toiletType,
               items: _toiletTypeList.map((toiletType) {
                 return DropdownMenuItem<ToiletType>(
@@ -730,11 +720,11 @@ class _NewLeadState extends State<NewLead> {
           ],
         ),
         _toiletTypeError == null
-            ? SizedBox.shrink()
-            : Text(
-                _toiletTypeError ?? '',
-                style: TextStyle(color: Colors.red[600]),
-              )
+          ? SizedBox.shrink()
+          : Text(
+            _toiletTypeError ?? '', 
+            style: TextStyle(color: Colors.red[600]),
+        )
       ],
     );
   }
@@ -743,7 +733,7 @@ class _NewLeadState extends State<NewLead> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Toilets', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfToilets"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfToiletsController,
       onFieldSubmitted: (value) {
@@ -751,7 +741,7 @@ class _NewLeadState extends State<NewLead> {
       },
       validator: (value) {
         if (value.isEmpty) {
-          return 'Number of Toilets is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onSaved: (value) {
@@ -766,7 +756,7 @@ class _NewLeadState extends State<NewLead> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Male Adults', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfMaleAdults"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfMaleAdultsController,
       onFieldSubmitted: (value) {
@@ -784,7 +774,7 @@ class _NewLeadState extends State<NewLead> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Female Adults', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfFemaleAdults"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfFemaleAdultsController,
       onFieldSubmitted: (value) {
@@ -802,7 +792,7 @@ class _NewLeadState extends State<NewLead> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Male Children', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfMaleChildren"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfMaleChildrenController,
       onFieldSubmitted: (value) {
@@ -820,7 +810,7 @@ class _NewLeadState extends State<NewLead> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Female Children', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfFemaleChildren"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfFemaleChildrenController,
       onFieldSubmitted: (value) {
@@ -838,11 +828,11 @@ class _NewLeadState extends State<NewLead> {
   Widget _getAddress() {
     return TextFormField(
       decoration: InputDecoration(
-          labelText: 'Address / House Number', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("address"), hasFloatingPlaceholder: true),
       controller: _addressController,
       validator: (value) {
         if (value.isEmpty) {
-          return 'Address is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onFieldSubmitted: (value) {
@@ -860,7 +850,7 @@ class _NewLeadState extends State<NewLead> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Primary Phone Number', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("primaryPhoneNumber"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.phone,
       controller: _primaryNumberController,
       onFieldSubmitted: (value) {
@@ -868,7 +858,7 @@ class _NewLeadState extends State<NewLead> {
       },
       validator: (value) {
         if (value.isEmpty) {
-          return 'Primary Telephone is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onSaved: (value) {
@@ -883,7 +873,7 @@ class _NewLeadState extends State<NewLead> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Secondary Phone Number', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("secondaryPhoneNumber"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.phone,
       controller: _secondaryNumbercontroller,
       onFieldSubmitted: (value) {
@@ -904,7 +894,7 @@ class _NewLeadState extends State<NewLead> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Reason for Enrollment'),
+          child: Text(AppTranslations.of(context).text("reasonForEnrollment")),
         ),
         Expanded(
           flex: 2,
@@ -917,7 +907,7 @@ class _NewLeadState extends State<NewLead> {
                   setState(() {
                     _enrollmentReason[key] = value;
                   });
-                  if (value) {
+                  if(value) {
                     int id = await model.getEnrollmentReasonId(key);
                     _reasonsSelected.add(id);
                   } else {
@@ -936,9 +926,9 @@ class _NewLeadState extends State<NewLead> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Service Provider'),
+        Text(AppTranslations.of(context).text("serviceProvider")),
         DropdownButton<ServiceProvider>(
-          hint: Text('Service Provider'),
+          hint: Text(AppTranslations.of(context).text("serviceProvider")),
           value: _serviceProvider,
           items: _serviceProviders.map((serviceProvider) {
             return DropdownMenuItem<ServiceProvider>(
@@ -960,9 +950,9 @@ class _NewLeadState extends State<NewLead> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Telephone Type'),
+        Text(AppTranslations.of(context).text("telephoneType")),
         DropdownButton<TelephoneType>(
-          hint: Text('Telephone Type'),
+          hint: Text(AppTranslations.of(context).text("telephoneType")),
           value: _telephoneType,
           items: _telephoneTypes.map((telephoneType) {
             return DropdownMenuItem<TelephoneType>(
@@ -986,7 +976,7 @@ class _NewLeadState extends State<NewLead> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Salaried Worker?'),
+            Text(AppTranslations.of(context).text("salariedWorker")),
             DropdownButton<String>(
               value: _salariedWorker,
               items: _salary.map((salary) {
@@ -1006,31 +996,31 @@ class _NewLeadState extends State<NewLead> {
         Container(
           child: (_salariedWorker == 'Yes'
               ? GestureDetector(
-                  onTap: () async {
-                    DateTime datePicked = await showDatePicker(
-                        context: context,
-                        firstDate: new DateTime.now(),
-                        initialDate: new DateTime.now(),
-                        lastDate: new DateTime(2030));
-                    setState(() {
-                      _paymentDateController.text = datePicked.day.toString();
-                      _paymentDate = datePicked.day.toString();
-                    });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(30.0, 0, 30.0, 0),
-                    child: AbsorbPointer(
-                      child: TextFormField(
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(
-                          labelText: 'Payment Day',
-                          hasFloatingPlaceholder: true,
-                        ),
-                        controller: _paymentDateController,
+                onTap: () async {
+                  DateTime datePicked = await showDatePicker(
+                      context: context,
+                      firstDate: new DateTime.now(),
+                      initialDate: new DateTime.now(),
+                      lastDate: new DateTime(2030));
+                  setState(() {
+                    _paymentDateController.text = datePicked.day.toString();
+                    _paymentDate = datePicked.day.toString();
+                  });
+                },
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(30.0, 0, 30.0, 0),
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        labelText: AppTranslations.of(context).text("paymentDay"),
+                        hasFloatingPlaceholder: true,
                       ),
+                      controller: _paymentDateController,
                     ),
                   ),
-                )
+                ),
+              )
               : null),
         )
       ],
@@ -1043,7 +1033,7 @@ class _NewLeadState extends State<NewLead> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Other Paid Services'),
+          child: Text(AppTranslations.of(context).text("otherPaidServices")),
         ),
         Expanded(
           flex: 2,
@@ -1056,7 +1046,7 @@ class _NewLeadState extends State<NewLead> {
                   setState(() {
                     _paidServices[key] = value;
                   });
-                  if (value) {
+                  if(value) {
                     int id = await model.getPaidServiceId(key);
                     _servicesSelected.add(id);
                   } else {
@@ -1077,7 +1067,7 @@ class _NewLeadState extends State<NewLead> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Privacy'),
+          child: Text(AppTranslations.of(context).text("privacy")),
         ),
         Expanded(
           flex: 2,
@@ -1090,7 +1080,7 @@ class _NewLeadState extends State<NewLead> {
                   setState(() {
                     _privacyList[key] = value;
                   });
-                  if (value) {
+                  if(value) {
                     int id = await model.getToiletPrivacyId(key);
                     _privacySelected.add(id);
                   } else {
@@ -1111,7 +1101,7 @@ class _NewLeadState extends State<NewLead> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Type'),
+          child: Text(AppTranslations.of(context).text("type")),
         ),
         Expanded(
           flex: 2,
@@ -1124,7 +1114,7 @@ class _NewLeadState extends State<NewLead> {
                   setState(() {
                     _typeList[key] = value;
                   });
-                  if (value) {
+                  if(value) {
                     int id = await model.getToiletTypeIdCA(key);
                     _typeSelected.add(id);
                   } else {
@@ -1145,7 +1135,7 @@ class _NewLeadState extends State<NewLead> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Security'),
+          child: Text(AppTranslations.of(context).text("security")),
         ),
         Expanded(
           flex: 2,
@@ -1158,7 +1148,7 @@ class _NewLeadState extends State<NewLead> {
                   setState(() {
                     _securityList[key] = value;
                   });
-                  if (value) {
+                  if(value) {
                     int id = await model.getToiletSecurityId(key);
                     _securitySelected.add(id);
                   } else {
@@ -1180,9 +1170,9 @@ class _NewLeadState extends State<NewLead> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Padding(padding: EdgeInsets.only(right: 20), child: Text('Status')),
+            Padding(padding: EdgeInsets.only(right: 20), child: Text(AppTranslations.of(context).text("status"))),
             DropdownButton<String>(
-              hint: Text('Status'),
+              hint: Text(AppTranslations.of(context).text("status")),
               value: _status,
               items: _statusList.map((val) {
                 return DropdownMenuItem<String>(
@@ -1205,24 +1195,121 @@ class _NewLeadState extends State<NewLead> {
           ],
         ),
         _statusError == null
-            ? SizedBox.shrink()
-            : Text(
-                _statusError ?? '',
-                style: TextStyle(color: Colors.red[600]),
-              ),
+          ? SizedBox.shrink()
+          : Text(
+            _statusError ?? '', 
+            style: TextStyle(color: Colors.red[600]),
+        ),
         Container(
           child: _status == 'Open'
-              ? GestureDetector(
+            ? GestureDetector(
+                onTap: () async {
+                  DateTime datePicked = await showDatePicker(
+                      context: context,
+                      firstDate: new DateTime.now(),
+                      initialDate: DateTime.now(),
+                      lastDate: DateTime(2030));
+                  setState(() {
+                    _followUpDateController.text =
+                        DateFormat.yMMMd().format(datePicked);
+                    _fUDate = datePicked.toString();
+                  });
+                },
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(30.0, 0, 30.0, 0),
+                  child: AbsorbPointer(
+                    child: TextFormField(
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        labelText: AppTranslations.of(context).text("followUpDate"),
+                        hasFloatingPlaceholder: true,
+                      ),
+                      controller: _followUpDateController,
+                      validator: (value) {
+                        if (value.isEmpty)
+                          return AppTranslations.of(context).text("required");
+                      },
+                    ),
+                  ),
+                ),
+              )
+            : _status == 'Ready'
+            ? Column(
+                children: <Widget>[
+                  GestureDetector(
+                    onTap: () async {
+                      DateTime datePicked = await showDatePicker(
+                          context: context,
+                          firstDate: new DateTime.now(),
+                          initialDate: new DateTime.now(),
+                          lastDate: new DateTime(2030));
+                      setState(() {
+                        _siteInspectionDateController.text =
+                            DateFormat.yMMMd().format(datePicked);
+                        _sIDate = datePicked.toString();
+                      });
+                    },
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(30.0, 0, 30.0, 0),
+                      child: AbsorbPointer(
+                        child: TextFormField(
+                          textAlign: TextAlign.center,
+                          decoration: InputDecoration(
+                            labelText: AppTranslations.of(context).text("siteInspectionDate"),
+                            hasFloatingPlaceholder: true,
+                          ),
+                          controller: _siteInspectionDateController,
+                        ),
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      DateTime datePicked = await showDatePicker(
+                          context: context,
+                          firstDate: _sIDate != null ? DateTime.parse(_sIDate) : new DateTime.now(),
+                          initialDate: _sIDate != null ? DateTime.parse(_sIDate) : new DateTime.now(),
+                          lastDate: new DateTime(2030));
+                      setState(() {
+                        _toiletInstallationDateController.text =
+                            DateFormat.yMMMd().format(datePicked);
+                        _tIDate = datePicked.toString();
+                      });
+                    },
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(30.0, 0, 30.0, 0),
+                      child: AbsorbPointer(
+                        child: TextFormField(
+                          textAlign: TextAlign.center,
+                          decoration: InputDecoration(
+                            labelText: AppTranslations.of(context).text("toiletInstallationDate"),
+                            hasFloatingPlaceholder: true,
+                          ),
+                          controller: _toiletInstallationDateController,
+                          validator: (value) {
+                            if (value.isEmpty)
+                              return AppTranslations.of(context).text("required");
+                          },
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              )
+            : _status == 'Opportunity'
+            ? Column(
+              children: <Widget>[
+                GestureDetector(
                   onTap: () async {
                     DateTime datePicked = await showDatePicker(
                         context: context,
                         firstDate: new DateTime.now(),
-                        initialDate: DateTime.now(),
-                        lastDate: DateTime(2030));
+                        initialDate: new DateTime.now(),
+                        lastDate: new DateTime(2030));
                     setState(() {
-                      _followUpDateController.text =
+                      _toiletInstallationDateController.text =
                           DateFormat.yMMMd().format(datePicked);
-                      _fUDate = datePicked.toString();
+                      _tIDate = datePicked.toString();
                     });
                   },
                   child: Container(
@@ -1231,123 +1318,21 @@ class _NewLeadState extends State<NewLead> {
                       child: TextFormField(
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
-                          labelText: 'Follow Up Date',
+                          labelText: AppTranslations.of(context).text("estimatedInstallationDate"),
                           hasFloatingPlaceholder: true,
                         ),
-                        controller: _followUpDateController,
+                        controller: _toiletInstallationDateController,
                         validator: (value) {
                           if (value.isEmpty)
-                            return 'Follow Up Date is Required';
+                            return AppTranslations.of(context).text("required");
                         },
                       ),
                     ),
                   ),
                 )
-              : _status == 'Ready'
-                  ? Column(
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () async {
-                            DateTime datePicked = await showDatePicker(
-                                context: context,
-                                firstDate: new DateTime.now(),
-                                initialDate: new DateTime.now(),
-                                lastDate: new DateTime(2030));
-                            setState(() {
-                              _siteInspectionDateController.text =
-                                  DateFormat.yMMMd().format(datePicked);
-                              _sIDate = datePicked.toString();
-                            });
-                          },
-                          child: Container(
-                            padding: EdgeInsets.fromLTRB(30.0, 0, 30.0, 0),
-                            child: AbsorbPointer(
-                              child: TextFormField(
-                                textAlign: TextAlign.center,
-                                decoration: InputDecoration(
-                                  labelText: 'Site Inspection Date',
-                                  hasFloatingPlaceholder: true,
-                                ),
-                                controller: _siteInspectionDateController,
-                              ),
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () async {
-                            DateTime datePicked = await showDatePicker(
-                                context: context,
-                                firstDate: _sIDate != null
-                                    ? DateTime.parse(_sIDate)
-                                    : new DateTime.now(),
-                                initialDate: _sIDate != null
-                                    ? DateTime.parse(_sIDate)
-                                    : new DateTime.now(),
-                                lastDate: new DateTime(2030));
-                            setState(() {
-                              _toiletInstallationDateController.text =
-                                  DateFormat.yMMMd().format(datePicked);
-                              _tIDate = datePicked.toString();
-                            });
-                          },
-                          child: Container(
-                            padding: EdgeInsets.fromLTRB(30.0, 0, 30.0, 0),
-                            child: AbsorbPointer(
-                              child: TextFormField(
-                                textAlign: TextAlign.center,
-                                decoration: InputDecoration(
-                                  labelText: 'Toilet Installation Date',
-                                  hasFloatingPlaceholder: true,
-                                ),
-                                controller: _toiletInstallationDateController,
-                                validator: (value) {
-                                  if (value.isEmpty)
-                                    return 'Toilet Installation Date is Required';
-                                },
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
-                    )
-                  : _status == 'Opportunity'
-                      ? Column(
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap: () async {
-                                DateTime datePicked = await showDatePicker(
-                                    context: context,
-                                    firstDate: new DateTime.now(),
-                                    initialDate: new DateTime.now(),
-                                    lastDate: new DateTime(2030));
-                                setState(() {
-                                  _toiletInstallationDateController.text =
-                                      DateFormat.yMMMd().format(datePicked);
-                                  _tIDate = datePicked.toString();
-                                });
-                              },
-                              child: Container(
-                                padding: EdgeInsets.fromLTRB(30.0, 0, 30.0, 0),
-                                child: AbsorbPointer(
-                                  child: TextFormField(
-                                    textAlign: TextAlign.center,
-                                    decoration: InputDecoration(
-                                      labelText: 'Estimated Installation Date',
-                                      hasFloatingPlaceholder: true,
-                                    ),
-                                    controller:
-                                        _toiletInstallationDateController,
-                                    validator: (value) {
-                                      if (value.isEmpty)
-                                        return 'Estimated Installation Date is Required';
-                                    },
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        )
-                      : null,
+              ],
+            )
+            : null,
         )
       ],
     );
@@ -1356,7 +1341,7 @@ class _NewLeadState extends State<NewLead> {
   Widget _getComment() {
     return TextFormField(
       decoration:
-          InputDecoration(labelText: 'Comment', hasFloatingPlaceholder: true),
+          InputDecoration(labelText: AppTranslations.of(context).text("comment"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.multiline,
       maxLines: 3,
       controller: _commentController,
@@ -1375,7 +1360,7 @@ class _NewLeadState extends State<NewLead> {
   List<Step> _steps(InitialSetupModel model) {
     List<Step> steps = [
       Step(
-          title: Text('Personal Details'),
+          title: Text(AppTranslations.of(context).text("personalDetails")),
           content: Form(
             key: _personalDetailsFormKey,
             child: Column(
@@ -1407,7 +1392,7 @@ class _NewLeadState extends State<NewLead> {
           ),
           isActive: _currentStep >= 0),
       Step(
-          title: Text('Toilet Information'),
+          title: Text(AppTranslations.of(context).text("toiletInformation")),
           content: Form(
             key: _toiletInformationFormKey,
             child: Column(
@@ -1429,7 +1414,7 @@ class _NewLeadState extends State<NewLead> {
           ),
           isActive: _currentStep >= 1),
       Step(
-          title: Text('Contact Information'),
+          title: Text(AppTranslations.of(context).text("contactDetails")),
           content: Form(
             key: _contactInformationFormKey,
             child: Column(
@@ -1445,7 +1430,7 @@ class _NewLeadState extends State<NewLead> {
           ),
           isActive: _currentStep >= 2),
       Step(
-          title: Text('Additional Information'),
+          title: Text(AppTranslations.of(context).text("additionalInformation")),
           content: Form(
             key: _additionalInformationFormKey,
             child: Column(
@@ -1462,7 +1447,7 @@ class _NewLeadState extends State<NewLead> {
                 Divider(),
                 Column(
                   children: <Widget>[
-                    Text('Current Access To Toilet'),
+                    Text(AppTranslations.of(context).text("currentAccessToToilet")),
                     Divider(),
                     _getPrivacy(model),
                     Divider(),
@@ -1478,7 +1463,7 @@ class _NewLeadState extends State<NewLead> {
           ),
           isActive: _currentStep >= 3),
       Step(
-          title: Text('Status'),
+          title: Text(AppTranslations.of(context).text("status")),
           content: Form(
             key: _statusFormKey,
             child: Column(
@@ -1501,108 +1486,76 @@ class _NewLeadState extends State<NewLead> {
         _endTime = DateTime.now().toString();
         _isLoading = true;
       });
-      // Fluttertoast.showToast(
-      //   msg: 'Creating Lead',
-      //   toastLength: Toast.LENGTH_LONG
-      // );
+      Fluttertoast.showToast(
+        msg: 'Creating Lead',
+        toastLength: Toast.LENGTH_LONG
+      );
 
       Lead lead = new Lead(
-          _firstName,
-          _lastName,
-          _otherNames,
-          _territory.territoryId,
-          _subTerritory.subTerritoryId,
-          _block.blockId,
-          _gender,
-          _primaryPhoneNumber,
-          _secondaryPhoneNumber,
-          _referredBy,
-          _toiletType.toiletTypeId,
-          _numberOfToilets,
-          _numberOfMaleAdults,
-          _numberOfFemaleAdults,
-          _numberOfMaleChildren,
-          _numberOfFemaleChildren,
-          _latitude,
-          _longitude,
-          _infoSourceSelected.join(','),
-          _leadType.leadTypeId,
-          _disability,
-          _reasonsSelected.join(','),
-          _status,
-          _fUDate,
-          _sIDate,
-          _tIDate,
-          _comment,
-          _user['user_id'],
-          _serviceProvider.serviceProviderId,
-          _telephoneType.telephoneTypeId,
-          _salariedWorker,
-          _paymentDate,
-          _servicesSelected.join(','),
-          _typeSelected.join(','),
-          _securitySelected.join(','),
-          _privacySelected.join(','),
-          _address,
-          null);
-      int result = await leadModel.saveLead(lead);
-      if (result > 0) {
+        _firstName,
+        _lastName,
+        _otherNames,
+        _territory.territoryId,
+        _subTerritory.subTerritoryId,
+        _block.blockId,
+        _gender,
+        _primaryPhoneNumber,
+        _secondaryPhoneNumber,
+        _referredBy,
+        _toiletType.toiletTypeId,
+        _numberOfToilets,
+        _numberOfMaleAdults,
+        _numberOfFemaleAdults,
+        _numberOfMaleChildren,
+        _numberOfFemaleChildren,
+        _latitude,
+        _longitude,
+        _infoSourceSelected.join(','),
+        _leadType.leadTypeId,
+        _disability,
+        _reasonsSelected.join(','),
+        _status,
+        _fUDate,
+        _sIDate,
+        _tIDate,
+        _comment,
+        _user['user_id'],
+        _serviceProvider.serviceProviderId,
+        _telephoneType.telephoneTypeId,
+        _salariedWorker,
+        _paymentDate,
+        _servicesSelected.join(','),
+        _typeSelected.join(','),
+        _securitySelected.join(','),
+        _privacySelected.join(','),
+        _address,
+        null
+      );
+
+      Response response = await LeadService.saveLead(lead);
+      var decodedJson = jsonDecode(response.body);
+      var status = decodedJson['status'];
+
+      print(response.statusCode);
+      print(response.body);
+
+      if(status == 200) {            
+        int saveLead = await leadModel.saveLead(Lead.map(decodedJson['lead']));
         setState(() {
-          _isLoading = false;
+          _isLoading = false; 
         });
-        SweetAlert.dialog(
-          type: AlertType.SUCCESS,
-          title: "Lead Saved Locally",
-          content: "Sync Now ?",
-          cancelable: true,
-          confirmButtonText: "YES",
-          cancelButtonText: "NO",
-          showCancel: true,
-          closeOnConfirm: false,
-        ).then((v) {
-          if (v) {
-          } else {
-            Navigator.of(context).pop();
-          }
-        });
+        if(saveLead > 0) {
+          Navigator.of(context).pop();
+        }
       } else {
-        setState(() {
-          _isLoading = false;
-        });
-        SweetAlert.dialog(
-          type: AlertType.ERROR,
-          title: "Failed To Save Lead",
-          confirmButtonText: "OK",
+        Fluttertoast.showToast(
+          msg: 'Could Not Save Lead',
+          toastLength: Toast.LENGTH_SHORT,
         );
+        setState(() {
+          _isLoading = false; 
+        });
       }
-      // setState(() {
-      //  _isLoading=false;
-      // });
-
-      // Response response = await LeadService.saveLead(lead);
-      // var decodedJson = jsonDecode(response.body);
-      // var status = decodedJson['status'];
-
-      // print(response.statusCode);
-      // print(response.body);
-
-      // if(status == 200) {
-      //   int saveLead = await leadModel.saveLead(Lead.map(decodedJson['lead']));
-      //   setState(() {
-      //     _isLoading = false;
-      //   });
-      //   if(saveLead > 0) {
-      //     Navigator.of(context).pop();
-      //   }
-      // } else {
-      //   Fluttertoast.showToast(
-      //     msg: 'Could Not Save Lead',
-      //     toastLength: Toast.LENGTH_SHORT,
-      //   );
-      //   setState(() {
-      //     _isLoading = false;
-      //   });
-      // }
     } catch (e) {
       currentLocation = null;
     }
@@ -1620,11 +1573,12 @@ class _NewLeadState extends State<NewLead> {
           model: InitialSetupModel(),
           child: Scaffold(
             appBar: AppBar(
-              title: Text('New Lead'),
+              title: Text(AppTranslations.of(context).text("newLead")),
             ),
             body: ModalProgressHUD(
               inAsyncCall: _isLoading,
               opacity: 0.5,
+              progressIndicator: CircularProgressIndicator(),
               child: new ScopedModelDescendant<LeadModel>(
                 builder: (context, child, leadModel) {
                   return ScopedModelDescendant<InitialSetupModel>(
@@ -1636,24 +1590,23 @@ class _NewLeadState extends State<NewLead> {
                       initialSetupModel.fetchAllLeadTypes();
                       initialSetupModel.fetchAllToiletTypes();
                       initialSetupModel.fetchAllTelephoneTypes();
-
+                      
                       return Stepper(
                         steps: _steps(initialSetupModel),
                         currentStep: this._currentStep,
                         onStepTapped: (step) {
-                          // setState(() {
-                          //   this._currentStep = step;
-                          // });
+                          setState(() {
+                            this._currentStep = step;
+                          });
                         },
                         onStepContinue: () {
                           FocusScope.of(context).requestFocus(new FocusNode());
                           if (this._currentStep <= 0) {
-                            bool _validatePD =
-                                _personalDetailsFormKey.currentState.validate();
+                            bool _validatePD = _personalDetailsFormKey.currentState.validate();
 
-                            if (_territory == null) {
+                            if(_territory == null) {
                               setState(() {
-                                _territoryError = 'Select Territory';
+                                _territoryError = AppTranslations.of(context).text("required");
                               });
                               _validatePD = false;
                             } else {
@@ -1662,9 +1615,9 @@ class _NewLeadState extends State<NewLead> {
                               });
                             }
 
-                            if (_subTerritory == null) {
+                            if(_subTerritory == null) {
                               setState(() {
-                                _subTerritoryError = 'Select Sub-Territory';
+                                _subTerritoryError = AppTranslations.of(context).text("required");
                               });
                               _validatePD = false;
                             } else {
@@ -1672,8 +1625,8 @@ class _NewLeadState extends State<NewLead> {
                                 _subTerritoryError = null;
                               });
                             }
-
-                            if (_gender == null) {
+                            
+                            if(_gender == null) {
                               setState(() {
                                 _genderError = 'Select Gender';
                               });
@@ -1693,13 +1646,11 @@ class _NewLeadState extends State<NewLead> {
                               });
                             }
                           } else if (this._currentStep <= 1) {
-                            bool _validateTI = _toiletInformationFormKey
-                                .currentState
-                                .validate();
+                            bool _validateTI = _toiletInformationFormKey.currentState.validate();
 
-                            if (_toiletType == null) {
+                            if(_toiletType == null) {
                               setState(() {
-                                _toiletTypeError = 'Select Toilet Type';
+                                _toiletTypeError = AppTranslations.of(context).text("required");
                               });
                               _validateTI = false;
                             } else {
@@ -1707,7 +1658,7 @@ class _NewLeadState extends State<NewLead> {
                                 _toiletTypeError = null;
                               });
                             }
-
+                            
                             if (_validateTI) {
                               setState(() {
                                 _toiletTypeError = null;
@@ -1715,8 +1666,7 @@ class _NewLeadState extends State<NewLead> {
                               });
                             }
                           } else if (this._currentStep <= 2) {
-                            if (_contactInformationFormKey.currentState
-                                .validate()) {
+                            if (_contactInformationFormKey.currentState.validate()) {
                               setState(() {
                                 this._currentStep = this._currentStep + 1;
                               });
@@ -1726,10 +1676,9 @@ class _NewLeadState extends State<NewLead> {
                               this._currentStep = this._currentStep + 1;
                             });
                           } else {
-                            bool _validateS =
-                                _statusFormKey.currentState.validate();
+                            bool _validateS = _statusFormKey.currentState.validate();
 
-                            if (_status == null) {
+                            if(_status == null) {
                               setState(() {
                                 _statusError = 'Select Status';
                               });
@@ -1747,8 +1696,7 @@ class _NewLeadState extends State<NewLead> {
                               _additionalInformationFormKey.currentState.save();
                               _statusFormKey.currentState.save();
 
-                              _createLead(leadModel,
-                                  initialSetupModel.userObject['user_id']);
+                              _createLead(leadModel, initialSetupModel.userObject['user_id']);
                             }
                           }
                         },

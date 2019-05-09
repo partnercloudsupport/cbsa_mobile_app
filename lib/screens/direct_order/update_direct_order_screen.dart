@@ -1,17 +1,11 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:cbsa_mobile_app/Utils/database_helper.dart';
-import 'package:cbsa_mobile_app/models/direct_order.dart';
+import 'package:cbsa_mobile_app/app_translations.dart';
 import 'package:cbsa_mobile_app/models/lead.dart';
-import 'package:cbsa_mobile_app/models/lead_conversion.dart';
-import 'package:cbsa_mobile_app/models/order.dart';
 import 'package:cbsa_mobile_app/scoped_model/initial_setup_model.dart';
 import 'package:cbsa_mobile_app/scoped_model/lead_model.dart';
-import 'package:cbsa_mobile_app/services/direct_order_service.dart';
-import 'package:cbsa_mobile_app/services/lead_conversion_service.dart';
-import 'package:cbsa_mobile_app/services/lead_service.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/block.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/lead_type.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/service_provider.dart';
@@ -21,13 +15,11 @@ import 'package:cbsa_mobile_app/setup_models.dart/territory.dart';
 import 'package:cbsa_mobile_app/setup_models.dart/toilet_type.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:location/location.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:scoped_model/scoped_model.dart';
-// import 'package:http/http.dart' show Response;
 
 class UpdateDirectRecord extends StatefulWidget {
   final Lead lead;
@@ -47,10 +39,6 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
   final _paymentInformationFormKey = GlobalKey<FormState>();
   final _documentFormKey = GlobalKey<FormState>();
 
-  // Time
-  String _startTime;
-  String _endTime;
-
   // Location
   var location = new Location();
   LocationData currentLocation;
@@ -64,19 +52,19 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
   TextEditingController _lastNameController = TextEditingController();
   String _otherNames;
   TextEditingController _otherNamesController = TextEditingController();
-  Territory _territory = Territory.empty();
+  Territory _territory;
   List<Territory> _territoryList = [];
-  SubTerritory _subTerritory = SubTerritory.empty();
+  SubTerritory _subTerritory;
   List<SubTerritory> _allSubTerritories = [];
   List<SubTerritory> _subTerritoryList = [];
-  Block _block = Block.empty();
+  Block _block;
   List<Block> _allBlocks = [];
   List<Block> _blockList = [];
   String _gender = 'Male';
   List<String> _genderList = ['Male', 'Female', 'Other'];
   String _disability = 'No';
   List<String> _disabilityList = ['Yes', 'No'];
-  LeadType _leadType = LeadType.empty();
+  LeadType _leadType;
   List<LeadType> _leadTypeList = [];
   Map<String, bool> _infoSourceList = {};
   List<int> _infoSourceSelected = [];
@@ -85,7 +73,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
   TextEditingController _referredByController = TextEditingController();
 
   // Toilet Information
-  ToiletType _toiletType = ToiletType.empty();
+  ToiletType _toiletType;
   List<ToiletType> _toiletTypeList = [];
   int _numberOfToilets;
   TextEditingController _numberOfToiletsController = TextEditingController();
@@ -121,8 +109,6 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     'Mobile Money Account': false
   };
   List<String> _savingsSelected = [];
-  // List<String> _householdSavingsList = ['Bank', 'Savings Club', 'Mobile Money Account', 'Other'];
-  // String _householdSavings;
   
   ServiceProvider _serviceProvider = ServiceProvider.empty();
   List<ServiceProvider> _serviceProviders = [];
@@ -244,7 +230,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     _paymentDateController.text = widget.lead.paymentDate;
     _commentController.text = widget.lead.comments;
 
-    // print(widget.lead.privacySelected);
+    print(widget.lead.servicesSelected);
 
     _infoSourceSelected = widget.lead.infoSourceSelected != null ? widget.lead.infoSourceSelected.split(',').toList().map((item) => int.parse(item)).toList() : [];
     _reasonsSelected = widget.lead.reasonsSelected != null ? widget.lead.reasonsSelected.split(',').toList().map((item) => int.parse(item)).toList() : [];
@@ -254,7 +240,6 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     _privacySelected = widget.lead.privacySelected != null ? widget.lead.privacySelected.split(',').toList().map((item) => int.parse(item)).toList() : [];
 
     setState(() {
-      _startTime = DateTime.now().toString();
       _gender = widget.lead.gender;
     });
   }
@@ -272,7 +257,6 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     var result = await db.getLeadConversion(widget.lead.id);
 
     if(result != null) {
-      print(result.householdSavings);
       setState(() {
         this._primaryOccupation = result.primaryOccupation;
         this._secondaryOccupation = result.secondaryOccupation;
@@ -288,9 +272,11 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     // var result = await db.getOrder(widget.lead.id);
     var result = await db.getAllOrders();
     var result1 = await db.getAllLeadConversions();
+    var result2 = await db.getLeadConversion(widget.lead.id);
 
     // print(result);
     // print(result1.length);
+    print(result2);
   }
 
   // DROPDOWNS
@@ -657,31 +643,18 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     });
   }
 
-  _getLocation() async {
-    try {
-      currentLocation = await location.getLocation();
-    } catch (e) {
-      currentLocation = null;
-    }
-    print(currentLocation);
-    setState(() {
-      _latitude = currentLocation.latitude;
-      _longitude = currentLocation.longitude;
-    });
-  }
-
   // Personal Details Widgets
   Widget _getFirstName() {
     return TextFormField(
       decoration: InputDecoration(
-          labelText: 'First Name', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("firstName"), hasFloatingPlaceholder: true),
       controller: _firstNameController,
       onFieldSubmitted: (value) {
         _firstNameController.text = value;
       },
       validator: (value) {
         if (value.isEmpty) {
-          return 'First Name is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onSaved: (value) {
@@ -695,14 +668,14 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
   Widget _getLastName() {
     return TextFormField(
       decoration:
-          InputDecoration(labelText: 'Last Name', hasFloatingPlaceholder: true),
+          InputDecoration(labelText: AppTranslations.of(context).text("lastName"), hasFloatingPlaceholder: true),
       controller: _lastNameController,
       onFieldSubmitted: (value) {
         _lastNameController.text = value;
       },
       validator: (value) {
         if (value.isEmpty) {
-          return 'Last Name is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onSaved: (value) {
@@ -716,7 +689,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
   Widget _getOtherNames() {
     return TextFormField(
       decoration: InputDecoration(
-          labelText: 'Other Names', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("otherNames"), hasFloatingPlaceholder: true),
       controller: _otherNamesController,
       onFieldSubmitted: (value) {
         _otherNamesController.text = value;
@@ -733,9 +706,9 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Territory'),
+        Text(AppTranslations.of(context).text("territory")),
         DropdownButton<Territory>(
-          hint: Text('Territory'),
+          hint: Text(AppTranslations.of(context).text("territory")),
           value: _territory,
           items: _territoryList.map((Territory territory) {
             return new DropdownMenuItem<Territory>(
@@ -774,7 +747,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Sub-Territory'),
+        Text(AppTranslations.of(context).text("subTerritory")),
         _subTerritoryList.isNotEmpty
         ? DropdownButton<SubTerritory>(
           value: _subTerritory,
@@ -808,7 +781,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Block'),
+        Text(AppTranslations.of(context).text("block")),
         _blockList.isNotEmpty
         ? DropdownButton<Block>(
           value: _block,
@@ -833,7 +806,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Gender'),
+        Text(AppTranslations.of(context).text("gender")),
         DropdownButton<String>(
           value: _gender,
           items: _genderList.map((gender) {
@@ -856,7 +829,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Disabled?'),
+        Text(AppTranslations.of(context).text("disabled")),
         DropdownButton<String>(
           value: _disability,
           items: _disabilityList.map((disability) {
@@ -879,7 +852,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Lead Type'),
+        Text(AppTranslations.of(context).text("leadType")),
         DropdownButton<LeadType>(
           value: _leadType,
           items: _leadTypeList.map((leadType) {
@@ -904,7 +877,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Source of Information'),
+          child: Text(AppTranslations.of(context).text("sourceOfInformation")),
         ),
         Expanded(
           flex: 2,
@@ -941,7 +914,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.only(right: 20), 
-              child: Text('Referred?')
+              child: Text(AppTranslations.of(context).text("referred"))
             ),
             DropdownButton<String>(
               value: _referred,
@@ -971,7 +944,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
                   },
                   validator: (value) {
                     if (value.isEmpty) {
-                      return 'Name of Referee is Required';
+                      return AppTranslations.of(context).text("required");
                     }
                   },
                   onSaved: (value) {
@@ -991,7 +964,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Toilet Type'),
+        Text(AppTranslations.of(context).text("toiletType")),
         DropdownButton<ToiletType>(
           value: _toiletType,
           items: _toiletTypeList.map((toiletType) {
@@ -1014,7 +987,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Toilets', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfToilets"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfToiletsController,
       onFieldSubmitted: (value) {
@@ -1022,7 +995,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
       },
       validator: (value) {
         if (value.isEmpty) {
-          return 'Number of Toilets is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onSaved: (value) {
@@ -1037,7 +1010,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Male Adults', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfMaleAdult"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfMaleAdultsController,
       onFieldSubmitted: (value) {
@@ -1055,7 +1028,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Female Adults', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfFemaleAdults"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfFemaleAdultsController,
       onFieldSubmitted: (value) {
@@ -1073,7 +1046,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Male Children', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfMaleChildren"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfMaleChildrenController,
       onFieldSubmitted: (value) {
@@ -1091,7 +1064,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Number of Female Children', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("numberOfFemaleChildren"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.number,
       controller: _numberOfFemaleChildrenController,
       onFieldSubmitted: (value) {
@@ -1109,11 +1082,11 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
   Widget _getAddress() {
     return TextFormField(
       decoration: InputDecoration(
-          labelText: 'Address / House Number', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("address"), hasFloatingPlaceholder: true),
       controller: _addressController,
       validator: (value) {
         if (value.isEmpty) {
-          return 'Address is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onFieldSubmitted: (value) {
@@ -1131,7 +1104,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Primary Phone Number', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("primaryPhoneNumber"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.phone,
       controller: _primaryNumberController,
       onFieldSubmitted: (value) {
@@ -1139,7 +1112,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
       },
       validator: (value) {
         if (value.isEmpty) {
-          return 'Primary Telephone is Required';
+          return AppTranslations.of(context).text("required");
         }
       },
       onSaved: (value) {
@@ -1154,7 +1127,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return TextFormField(
       textAlign: TextAlign.center,
       decoration: InputDecoration(
-          labelText: 'Secondary Phone Number', hasFloatingPlaceholder: true),
+          labelText: AppTranslations.of(context).text("secondaryPhoneNumber"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.phone,
       controller: _secondaryNumbercontroller,
       onFieldSubmitted: (value) {
@@ -1175,7 +1148,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Reason for Enrollment'),
+          child: Text(AppTranslations.of(context).text("reasonForEnrollment")),
         ),
         Expanded(
           flex: 2,
@@ -1210,7 +1183,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
         children: <Widget>[
           Expanded(
             flex: 1,
-            child: Text('Household Savings'),
+            child: Text(AppTranslations.of(context).text("householdSavings")),
           ),
           Expanded(
             flex: 2,
@@ -1238,7 +1211,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Service Provider'),
+        Text(AppTranslations.of(context).text("serviceProvider")),
         DropdownButton<ServiceProvider>(
           value: _serviceProvider,
           items: _serviceProviders.map((serviceProvider) {
@@ -1261,7 +1234,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Telephone Type'),
+        Text(AppTranslations.of(context).text("telephoneType")),
         DropdownButton<TelephoneType>(
           value: _telephoneType,
           items: _telephoneTypes.map((telephoneType) {
@@ -1284,7 +1257,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Primary Occupation'),
+        Text(AppTranslations.of(context).text("primaryOccupation")),
         DropdownButton<String>(
           value: _primaryOccupation,
           items: _primaryOccupations.map((primaryOccupation) {
@@ -1307,7 +1280,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Secondary Occupation'),
+        Text(AppTranslations.of(context).text("secondaryOccupation")),
         DropdownButton<String>(
           value: _secondaryOccupation,
           items: _secondaryOccupations.map((secondaryOccupation) {
@@ -1332,7 +1305,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Salaried Worker?'),
+            Text(AppTranslations.of(context).text("salariedWorker")),
             DropdownButton<String>(
               value: _salariedWorker,
               items: _salary.map((salary) {
@@ -1355,7 +1328,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
                 keyboardType: TextInputType.numberWithOptions(),
                 textAlign: TextAlign.center,
                   decoration: InputDecoration(
-                      labelText: 'Payment Date', hasFloatingPlaceholder: true),
+                      labelText: AppTranslations.of(context).text("paymentDate"), hasFloatingPlaceholder: true),
                   controller: _paymentDateController,
                   onFieldSubmitted: (value) {
                     _paymentDateController.text = value;
@@ -1378,7 +1351,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Other Paid Services'),
+          child: Text(AppTranslations.of(context).text("otherPaidServices")),
         ),
         Expanded(
           flex: 2,
@@ -1412,7 +1385,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Privacy'),
+          child: Text(AppTranslations.of(context).text("privacy")),
         ),
         Expanded(
           flex: 2,
@@ -1446,7 +1419,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Type'),
+          child: Text(AppTranslations.of(context).text("type")),
         ),
         Expanded(
           flex: 2,
@@ -1480,7 +1453,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
       children: <Widget>[
         Expanded(
           flex: 1,
-          child: Text('Security'),
+          child: Text(AppTranslations.of(context).text("security")),
         ),
         Expanded(
           flex: 2,
@@ -1512,7 +1485,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Text('Home Ownership'),
+        Text(AppTranslations.of(context).text("homeOwnership")),
         DropdownButton<String>(
           value: _homeOwnership,
           items: _homeOwnerships.map((homeOwnership) {
@@ -1541,7 +1514,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.only(right: 20),
-                child: Text('Status')
+                child: Text(AppTranslations.of(context).text("status"))
               ),
               Text(_status)
             ],
@@ -1569,7 +1542,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
                         child: TextFormField(
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
-                            labelText: 'Site Inspection Date',
+                            labelText: AppTranslations.of(context).text("siteInspectionDate"),
                             hasFloatingPlaceholder: true,
                           ),
                           controller: _siteInspectionDateController,
@@ -1596,13 +1569,13 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
                         child: TextFormField(
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
-                            labelText: 'Toilet Installation Date',
+                            labelText: AppTranslations.of(context).text("toiletInstallationDate"),
                             hasFloatingPlaceholder: true,
                           ),
                           controller: _toiletInstallationDateController,
                           validator: (value) {
                             if(value.isEmpty)
-                              return 'Toilet Installation Date is Required';
+                              return AppTranslations.of(context).text("required");
                           },
                         ),
                       ),
@@ -1620,7 +1593,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
   Widget _getComment() {
     return TextFormField(
       decoration:
-          InputDecoration(labelText: 'Comment', hasFloatingPlaceholder: true),
+          InputDecoration(labelText: AppTranslations.of(context).text("comment"), hasFloatingPlaceholder: true),
       keyboardType: TextInputType.multiline,
       maxLines: 3,
       controller: _commentController,
@@ -1645,7 +1618,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.only(bottom: 10),
-                child: Text('Customer Image'),
+                child: Text(AppTranslations.of(context).text("customerImage")),
               ),
               RaisedButton(
                 child: Row(children: <Widget>[Text('Take Photo  '), Icon(Icons.camera_alt)],),
@@ -1689,7 +1662,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.only(bottom: 10),
-                child: Text('Household Image'),
+                child: Text(AppTranslations.of(context).text("householdImage")),
               ),
               RaisedButton(
                 child: Row(children: <Widget>[Text('Take Photo  '), Icon(Icons.camera_alt)],),
@@ -1732,7 +1705,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.only(bottom: 10),
-                child: Text('Landmark Image'),
+                child: Text(AppTranslations.of(context).text("landmarkImage")),
               ),
               RaisedButton(
                 child: Row(children: <Widget>[Text('Take Photo  '), Icon(Icons.camera_alt)],),
@@ -1772,7 +1745,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
       TextFormField(
         textAlign: TextAlign.center,
         decoration: InputDecoration(
-          labelText: 'Mobile Money Code',
+          labelText: AppTranslations.of(context).text("mobileMoneyCode"),
           hasFloatingPlaceholder: true
         ),
         keyboardType: TextInputType.number,
@@ -1796,7 +1769,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text('Is Customer Same As Payer?'),
+              Text(AppTranslations.of(context).text("customerSameAsPayer")),
               DropdownButton<String>(
                 value: _payer,
                 items: _isPayer.map((payer) {
@@ -1818,7 +1791,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
             children: <Widget>[
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Payer First Name',
+                  labelText: AppTranslations.of(context).text("payerFirstName"),
                   hasFloatingPlaceholder: true
                 ),
                 controller: _payerFirstNameController,
@@ -1827,7 +1800,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
                 },
                 validator: (value) {
                   if(value.isEmpty) {
-                    return 'Payer First Name is Required';
+                    return AppTranslations.of(context).text("required");
                   }
                 },
                 onSaved: (value) {
@@ -1838,7 +1811,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
               ),
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Payer Last Name',
+                  labelText: AppTranslations.of(context).text("payerLastName"),
                   hasFloatingPlaceholder: true
                 ),
                 controller: _payerLastNameController,
@@ -1847,7 +1820,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
                 },
                 validator: (value) {
                   if(value.isEmpty) {
-                    return 'Payer Last Name is Required';
+                    return AppTranslations.of(context).text("required");
                   }
                 },
                 onSaved: (value) {
@@ -1859,7 +1832,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
               TextFormField(
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
-                  labelText: 'Payer Primary Phone Number',
+                  labelText: AppTranslations.of(context).text("payerPrimaryTelephone"),
                   hasFloatingPlaceholder: true
                 ),
                 keyboardType: TextInputType.number,
@@ -1869,7 +1842,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
                 },
                 validator: (value) {
                   if(value.isEmpty) {
-                    return 'Payer Primary Telephone is Required';
+                    return AppTranslations.of(context).text("required");
                   }
                 },
                 onSaved: (value) {
@@ -1881,7 +1854,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
               TextFormField(
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
-                  labelText: 'Payer Secondary Phone Number',
+                  labelText: AppTranslations.of(context).text("payerSecondaryTelephone"),
                   hasFloatingPlaceholder: true
                 ),
                 keyboardType: TextInputType.number,
@@ -1897,7 +1870,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
               ),
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: 'Payer Occupation',
+                  labelText:AppTranslations.of(context).text("payerOccupation"),
                   hasFloatingPlaceholder: true
                 ),
                 controller: _payerOccupationController,
@@ -1925,7 +1898,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
         children: <Widget>[
           Expanded(
             flex: 1,
-            child: Text('Payment Method'),
+            child: Text(AppTranslations.of(context).text("paymentMethod")),
           ),
           Expanded(
             flex: 2,
@@ -1957,7 +1930,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
         children: <Widget>[
           _documentPath == null
           ? Text('No Document Selected')
-          : Text(_documentPath.length.toString() + ' Document Added'),
+          : Text(_documentPath.length.toString() + ' ' + AppTranslations.of(context).text("documentAdded")),
           RaisedButton(
             child: Icon(Icons.attachment),
             onPressed: () async {
@@ -1982,7 +1955,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
   List<Step> _steps(InitialSetupModel model) {
     List<Step> steps = [
       Step(
-        title: Text('Personal Details'),
+        title: Text(AppTranslations.of(context).text("Personal Details")),
         content: Form(
           key: _personalDetailsFormKey,
           child: Column(
@@ -2013,7 +1986,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
         isActive: _currentStep >= 0
       ),
       Step(
-        title: Text('Toilet Information'),
+        title: Text(AppTranslations.of(context).text("toiletInformation")),
         content: Form(
           key: _toiletInformationFormKey,
           child: Column(
@@ -2036,7 +2009,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
         isActive: _currentStep >= 1
       ),
       Step(
-        title: Text('Contact Information'),
+        title: Text(AppTranslations.of(context).text("contactDetails")),
         content: Form(
           key: _contactInformationFormKey,
           child: Column(
@@ -2053,7 +2026,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
         isActive: _currentStep >= 2
       ),
       Step(
-        title: Text('Additional Information'),
+        title: Text(AppTranslations.of(context).text("additionalInformation")),
         content: Form(
           key: _additionalInformationFormKey,
           child: Column(
@@ -2078,7 +2051,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
               Divider(),
               Column(
                 children: <Widget>[
-                  Text('Current Access To Toilet'),
+                  Text(AppTranslations.of(context).text("currentAccessToToilet")),
                   Divider(),
                   _getPrivacy(model),
                   Divider(),
@@ -2095,7 +2068,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
         isActive: _currentStep >= 3
       ),
       Step(
-        title: Text('Status'),
+        title: Text(AppTranslations.of(context).text("status")),
         content: Form(
           key: _statusFormKey,
           child: Column(
@@ -2110,7 +2083,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
         isActive: _currentStep >= 4
       ),
       Step(
-        title: Text('Location Information'),
+        title: Text(AppTranslations.of(context).text("locationInformation")),
         content: Form(
           key: _locationInformationFormKey,
           child: Column(
@@ -2127,7 +2100,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
         isActive: _currentStep >= 5
       ),
       Step(
-        title: Text('Payment Information'),
+        title: Text(AppTranslations.of(context).text("paymentInformation")),
         content: Form(
           key: _paymentInformationFormKey,
           child: Column(
@@ -2144,7 +2117,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
         isActive: _currentStep >= 6
       ),
       Step(
-        title: Text('Document Upload'),
+        title: Text(AppTranslations.of(context).text("documentUpload")),
         content: Form(
           key: _documentFormKey,
           child: Column(
@@ -2163,7 +2136,6 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
   void _createDirectOrder(LeadModel model, int userId) async {
     try {
       setState(() {
-        _endTime = DateTime.now().toString();
         // _isLoading = true;
       });
 
@@ -2187,8 +2159,8 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
         'primaryTelephone': _primaryPhoneNumber,
         'secondaryTelephone': _secondaryPhoneNumber,
         'address': _address,
-        'latitude': _latitude,
-        'longitude': _longitude,
+        // 'latitude': _latitude,
+        // 'longitude': _longitude,
         'leadtype': _leadType.leadTypeId,
         'telephoneType': _telephoneType.telephoneTypeId,
         'telephoneServiceProvider': _serviceProvider.serviceProviderId,
@@ -2198,27 +2170,27 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
         'toileaccessToiletSecurity': _securitySelected.join(','),
         'salaryWorker': _salariedWorker,
         'payDay': _paymentDate,
-        'reasonForEnrollment': _reasonsSelected.join(','),
-        'houseHoldSavings': _savingsSelected.join(','),
-        'primaryOccupation': _primaryOccupation,
-        'secondaryOccupation': _secondaryOccupation,
-        'homeOwnership': _homeOwnership,
-        // 'customerImage': ,
-        // 'householdImage': ,
-        // 'landmarkImage': ,
-        'mobileMoneyCode': _mobileMoneyCode,
-        'payerFirstName': _payerFirstName,
-        'payerLastName': _payerLastName,
-        'relationship': _relationship,
-        'payerPrimaryTelephone': _payerPrimaryPhoneNumber,
-        'payerSecondaryTelephone': _payerSecondaryPhoneNumber,
-        'payerOccupation': _payerOccupation,
-        'paymentMethod': _paymentMethodSelected.join(','),
-        'device': 'mobile'
+        // 'reasonForEnrollment': _reasonsSelected.join(','),
+        // 'houseHoldSavings': _savingsSelected.join(','),
+        // 'primaryOccupation': _primaryOccupation,
+        // 'secondaryOccupation': _secondaryOccupation,
+        // 'homeOwnership': _homeOwnership,
+        // // 'customerImage': ,
+        // // 'householdImage': ,
+        // // 'landmarkImage': ,
+        // 'mobileMoneyCode': _mobileMoneyCode,
+        // 'payerFirstName': _payerFirstName,
+        // 'payerLastName': _payerLastName,
+        // 'relationship': _relationship,
+        // 'payerPrimaryTelephone': _payerPrimaryPhoneNumber,
+        // 'payerSecondaryTelephone': _payerSecondaryPhoneNumber,
+        // 'payerOccupation': _payerOccupation,
+        // 'paymentMethod': _paymentMethodSelected.join(','),
+        // 'device': 'mobile'
       };
 
       print(map);
-      print(_servicesSelected.join(','));
+      // print(_servicesSelected.join(','));
 
       // DirectOrder directOrder = new DirectOrder(
       //   _firstName, 
@@ -2357,6 +2329,7 @@ class _UpdateDirectRecordState extends State<UpdateDirectRecord> {
                         currentStep: this._currentStep,
                         onStepTapped: (step) {
                           setState(() {
+                            FocusScope.of(context).requestFocus(new FocusNode());
                             this._currentStep = step;
                           });
                         },
