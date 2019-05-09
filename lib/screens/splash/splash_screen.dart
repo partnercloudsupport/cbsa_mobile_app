@@ -22,11 +22,11 @@ class _SplashState extends State<Splash> {
   Map _currentUser;
   SharedPreferences prefs;
 
-  Future<UserObject> _fetchUser() async {
+  Future<Setups> _fetchUser() async {
     var db = new DatabaseHelper();
-    Map user = await db.getUserObject();
+    var setup = await db.getSetup();
     
-    return UserObject.map(user);
+    return setup;
   }
 
   void initState() {
@@ -43,10 +43,10 @@ class _SplashState extends State<Splash> {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: _fetchUser(),
-      builder: (BuildContext context, AsyncSnapshot<UserObject> snapshot) {
+      builder: (BuildContext context, AsyncSnapshot<Setups> snapshot) {
         return SplashScreen(
           seconds: 4,
-          navigateAfterSeconds: snapshot.hasData ? (((prefs.getBool('isloggedin') == null) || (prefs.getBool('isloggedin') == false)) ?  Login() : Home()) : SetUp(),
+          navigateAfterSeconds: snapshot.data!= null? (((prefs.getBool('isloggedin') == null) || (prefs.getBool('isloggedin') == false)) ?  Login() : Home()) : SetUp(),
           image: Image.asset('assets/logo.jpg'),
           photoSize: 150.0,
           loadingText: Text('Loading'),

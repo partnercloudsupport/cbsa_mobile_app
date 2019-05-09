@@ -140,13 +140,13 @@ class _LoginState extends State<Login> {
         if (_formKey.currentState.validate()) {
           _formKey.currentState.save();
           try{
-            var user = login.LoginModel(email: this._email, password: this._password,device_token: 'qwertyuiop'); //prefs.getString('firebase_token'));
+            var user = login.LoginModel(email: this._email, password: this._password,device_token: prefs.getString('firebase_token'));
             print('Request' + user.toMap().toString());
             Response response = await UserService.login(user);
             var decodedJson = jsonDecode(response.body);
             var status = decodedJson['status'];
             
-            // print(decodedJson);
+            print(decodedJson);
 
             if(status == 200) {
               
